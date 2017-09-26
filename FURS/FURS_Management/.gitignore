@@ -36,4 +36,5 @@
 *.user
 moc/
 *.db
+build-*
 
