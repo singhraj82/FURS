@@ -98,4 +98,22 @@ const QStringList gender(
   "Other",
 });
 
+// Database schema applications table
+const std::string c_table_applications("applications");
+const std::string c_table_field_id("id");
+const std::string c_table_field_last_name("last_name");
+const std::string c_table_field_first_name("first_name");
+const std::string c_table_field_age("age");
+const std::string c_table_field_gender("gender");
+const std::string c_table_field_phone("phone");
+const std::string c_table_field_street_address("street_address");
+const std::string c_table_field_city("city");
+const std::string c_table_field_state("state");
+const std::string c_table_field_zip_code("zip_code");
+const std::string c_table_field_speciality("zip_code");
+const std::string c_table_field_app_status("app_status");
+const std::string c_table_field_payment_status("payment_status");
+const std::string c_table_field_camp("camp");
+
+
 #endif // CONSTANTS_H

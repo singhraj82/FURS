@@ -1,15 +1,17 @@
 #ifndef FURS_MAIN_WINDOW_H
 #define FURS_MAIN_WINDOW_H
 
-#include <QMainWindow>
 #include <memory>
+#include <QMainWindow>
 #include <QListWidgetItem>
+
 
 namespace Ui {
 class FURS_main_window;
 }
 
 class Application;
+class Database_management;
 class FURS_main_window : public QMainWindow
 {
     Q_OBJECT
@@ -32,7 +34,8 @@ private:
 
 private:
     Ui::FURS_main_window *ui;
-    std::map<std::string, std::shared_ptr<Application>> m_applications;
+    std::map<std::string, std::shared_ptr<Application>> m_applications; 
+    std::shared_ptr<Database_management> m_db_management;
 };
 
 #endif // FURS_MAIN_WINDOW_H

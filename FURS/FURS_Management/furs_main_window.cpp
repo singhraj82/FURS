@@ -2,19 +2,26 @@
 #include "ui_furs_main_window.h"
 #include "constants.h"
 #include "application.h"
+#include "database_management.h"
 #include <QMessageBox>
+#include <QDebug>
+#include <QUuid>
+#include "constants.h"
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FURS_main_window)
 {
+    // initialize database
+    m_db_management = std::make_shared<Database_management>();
+
     ui->setupUi(this);
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
 
     // Always open main page when application launches.
     ui->furs_stacked_control->setCurrentIndex(0);
 
-    connect(ui->login_button, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    connect(ui->start_button, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->registration_button, SIGNAL(pressed()), this, SLOT(open_applications_window()));
 
     // initialization
@@ -58,7 +65,7 @@ void FURS_main_window::initialize_existing_application_tab_()
 
 // Actions stack window
 void FURS_main_window::open_action_window()
-{
+{ 
     ui->furs_stacked_control->setCurrentIndex(1);
 }
 
@@ -70,7 +77,7 @@ void FURS_main_window::open_applications_window()
 
 void FURS_main_window::add_record()
 {
-    auto application = std::make_shared<Application>();
+    /*auto application = std::make_shared<Application>();
     application->set_first_name(ui->line_edit_first_name->text().toStdString());
     application->set_last_name(ui->line_edit_last_name->text().toStdString());
     application->set_gender(ui->combo_box_gender->currentText().toStdString());
@@ -87,7 +94,51 @@ void FURS_main_window::add_record()
     application->set_camp(ui->combo_box_camp->currentText().toStdString());
 
     m_applications.emplace(std::pair<std::string, std::shared_ptr<Application>>(ui->line_edit_first_name->text().toStdString(), application));
+    ui->list_widget_existing_apps->addItem(ui->line_edit_first_name->text());*/
+
+    // Generate a GUID for the user id
+    QUuid guid =QUuid::createUuid();
+
+    std::string query("INSERT  INTO  " + c_table_applications + "(");
+    query += c_table_field_id + ",";
+    query += c_table_field_last_name + ",";
+    query += c_table_field_first_name + ",";
+    query += c_table_field_age + ",";
+    query += c_table_field_gender + ",";
+    query += c_table_field_phone + ",";
+    query += c_table_field_street_address + ",";
+    query += c_table_field_city + ",";
+    query += c_table_field_state + ",";
+    query += c_table_field_zip_code + ",";
+    query += c_table_field_speciality + ",";
+    query += c_table_field_app_status + ",";
+    query += c_table_field_payment_status + ",";
+    query += c_table_field_camp + ")";
+
+    query += " VALUES(";
+    query += "'" + guid.toString().toStdString() + "',";
+    query += "'" + ui->line_edit_last_name->text().toStdString() + "',";
+    query += "'" + ui->line_edit_first_name->text().toStdString() + "',";
+    query += "'" + std::string("guid.toString().toStdString()") + "',"; // Need to add age
+    query += "'" + ui->combo_box_gender->currentText().toStdString() + "',";
+    query += "'" + ui->line_edit_phone->text().toStdString() + "',";
+    query += "'" + ui->line_edit_street->text().toStdString() + "',";
+    query += "'" + ui->line_edit_city->text().toStdString() + "',";
+    query += "'" + ui->combo_box_state->currentText().toStdString() + "',";
+    query += "'" + ui->line_edit_zipcode->text().toStdString() + "',";
+    query += "'" + ui->combo_box_instrument->currentText().toStdString() + "',";
+    query += "'" + ui->combo_box_app_status->currentText().toStdString() + "',";
+    query += "'" + ui->combo_box_pmt_status->currentText().toStdString() + "',";
+    query += "'" + ui->combo_box_camp->currentText().toStdString() + "')";
+
+    QString str(query.c_str());
+    qDebug() << str;
+
+    m_db_management->update_query(query);
     ui->list_widget_existing_apps->addItem(ui->line_edit_first_name->text());
+
+
+    //auto result = m_db_management->result_from_query("SELECT * FROM new_table");
 
     // After saving the information reset the form to default values
     clear_new_application_form_();

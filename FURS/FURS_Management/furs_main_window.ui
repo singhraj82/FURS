@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -44,79 +44,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="login_group_box">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+         <widget class="QPushButton" name="start_button">
+          <property name="text">
+           <string>START</string>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>11</pointsize>
-           </font>
-          </property>
-          <property name="title">
-           <string>Login</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="0">
-            <widget class="QLabel" name="password_label">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Password:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QPushButton" name="login_button">
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Log in</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="login_label">
-             <property name="font">
-              <font>
-               <pointsize>11</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Login_id:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="login_line_2"/>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="login_line"/>
-           </item>
-          </layout>
-          <zorder>login_line</zorder>
-          <zorder>login_button</zorder>
-          <zorder>password_label</zorder>
-          <zorder>login_label</zorder>
-          <zorder>login_line_2</zorder>
          </widget>
         </item>
        </layout>
