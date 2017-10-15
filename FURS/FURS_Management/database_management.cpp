@@ -12,27 +12,29 @@ Database_management::~Database_management()
     close_database_();
 }
 
-void Database_management::update_query(std::string query_string)
+bool Database_management::update_query(std::string query_string)
 {
-    //query_string = "INSERT  INTO  applications(id,last_name,first_name,age,gender,phone,street_address,city,state,zip_code,zip_code,app_status,payment_status,camp) VALUES('{ss6f52bc-adce-4a57-846f-7738e2870a32}','Bush','sddasadsdsdd','guid.toString().toStdString()','Not selected','','','','Not selected','','Not selected','Not selected','Not selected','Not selected')";
     QSqlQuery query;
-    if (!query.exec(QString(query_string.c_str())))
+    auto query_result = query.exec(QString(query_string.c_str()));
+    if (!query_result)
     {
         qDebug() << "Failed to execute query: " << query_string.c_str();
     }
+
+    return query_result;
 }
 
-std::vector<std::vector<std::string>> Database_management::result_from_query(std::string query_string)
+bool Database_management::result_from_query(std::string query_string, std::vector<std::vector<std::string>>& results)
 {
     QSqlQuery query;
-    QString aa(query_string.c_str());
-    if(!query.exec(aa))
+    auto query_result = query.exec(QString(query_string.c_str()));
+    if (!query_result)
     {
-        qDebug() << "Error";
+        qDebug() << "Failed to execute query: " << query_string.c_str();
+        return false;
     }
 
     int column_count = query.record().count();
-    std::vector<std::vector<std::string>> results;
     while (query.next())
     {
         std::vector<std::string> result;
@@ -43,10 +45,10 @@ std::vector<std::vector<std::string>> Database_management::result_from_query(std
         results.emplace_back(result);
     }
 
-    return results;
+    return query_result;
 }
 
-std::vector<std::vector<std::string>> Database_management::select_result_from_query( std::vector<std::string> select_fields,  std::string table, std::string where_clause)
+bool Database_management::select_result_from_query(std::vector<std::string> select_fields, std::string table, std::string where_clause, std::vector<std::vector<std::string>>& results)
 {
     std::string query_string("select ");
 
@@ -67,6 +69,26 @@ std::vector<std::vector<std::string>> Database_management::select_result_from_qu
     // Add table name
     query_string += "from " + table + " " + where_clause;
 
+    QSqlQuery query;
+    auto query_result = query.exec(QString(query_string.c_str()));
+    if (!query_result)
+    {
+        qDebug() << "Failed to execute query: " << query_string.c_str();
+        return false;
+    }
+
+    int column_count = query.record().count();
+    while (query.next())
+    {
+        std::vector<std::string> result;
+        for (int i = 0; i < column_count; ++i)
+        {
+            result.emplace_back(query.value(i).toString().toStdString());
+        }
+        results.emplace_back(result);
+    }
+
+    return query_result;
 }
 
 void Database_management::setup_database_()

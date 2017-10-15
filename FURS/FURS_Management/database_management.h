@@ -12,9 +12,9 @@ public:
     Database_management();
     virtual ~Database_management();
 
-    void update_query(std::string query);
-    std::vector<std::vector<std::string>> result_from_query(std::string query);
-    std::vector<std::vector<std::string>> select_result_from_query( std::vector<std::string> select_fields, std::string table, std::string where_clause);
+    bool update_query(std::string query_string);
+    bool result_from_query(std::string query_string, std::vector<std::vector<std::string>>& results);
+    bool select_result_from_query(std::vector<std::string> select_fields, std::string table, std::string where_clause, std::vector<std::vector<std::string>>& results);
 
 protected:
     void setup_database_();
