@@ -110,7 +110,7 @@ const std::string c_table_field_street_address("street_address");
 const std::string c_table_field_city("city");
 const std::string c_table_field_state("state");
 const std::string c_table_field_zip_code("zip_code");
-const std::string c_table_field_speciality("zip_code");
+const std::string c_table_field_speciality("speciality");
 const std::string c_table_field_app_status("app_status");
 const std::string c_table_field_payment_status("payment_status");
 const std::string c_table_field_camp("camp");
