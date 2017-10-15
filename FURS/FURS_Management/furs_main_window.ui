@@ -335,7 +335,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Date of Birth:</string>
+              <string>Age:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_gender">
@@ -375,16 +375,6 @@
              <property name="geometry">
               <rect>
                <x>500</x>
-               <y>70</y>
-               <width>231</width>
-               <height>22</height>
-              </rect>
-             </property>
-            </widget>
-            <widget class="QDateEdit" name="date_edit">
-             <property name="geometry">
-              <rect>
-               <x>100</x>
                <y>70</y>
                <width>231</width>
                <height>22</height>
@@ -488,6 +478,16 @@
                </rect>
               </property>
              </widget>
+            </widget>
+            <widget class="QLineEdit" name="line_edit_age">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>70</y>
+               <width>231</width>
+               <height>20</height>
+              </rect>
+             </property>
             </widget>
            </widget>
            <widget class="QLabel" name="label_app_status">
@@ -825,16 +825,6 @@
               </rect>
              </property>
             </widget>
-            <widget class="QDateEdit" name="date_edit_exist">
-             <property name="geometry">
-              <rect>
-               <x>100</x>
-               <y>120</y>
-               <width>231</width>
-               <height>22</height>
-              </rect>
-             </property>
-            </widget>
             <widget class="QLabel" name="label_dob_exist_exist">
              <property name="geometry">
               <rect>
@@ -933,6 +923,16 @@
               </property>
              </widget>
             </widget>
+            <widget class="QLineEdit" name="line_edit_age_exist">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>120</y>
+               <width>231</width>
+               <height>20</height>
+              </rect>
+             </property>
+            </widget>
            </widget>
            <widget class="QComboBox" name="combo_box_camp_exist">
             <property name="geometry">
@@ -983,7 +983,7 @@
              <string>Cancel</string>
             </property>
            </widget>
-           <widget class="QListWidget" name="list_widget_existing_apps">
+           <widget class="QTableWidget" name="table_widget_filter">
             <property name="geometry">
              <rect>
               <x>10</x>
@@ -992,6 +992,11 @@
               <height>531</height>
              </rect>
             </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <column/>
+            <column/>
            </widget>
           </widget>
          </widget>

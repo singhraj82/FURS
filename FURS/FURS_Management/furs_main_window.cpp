@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QUuid>
 #include "constants.h"
+#include <QTableWidget>
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
@@ -64,10 +65,11 @@ void FURS_main_window::initialize_existing_application_tab_()
     refresh_existing_applications_list_();
 
     connect(ui->registration_tab_widget, SIGNAL(currentChanged(int)), this, SLOT(tab_selected(int)));
-    connect(ui->list_widget_existing_apps, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(pull_record(QListWidgetItem*)));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
     connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(update_existing_record()));
+
+    connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record(int, int)));
 }
 
 // Actions stack window
@@ -127,7 +129,7 @@ void FURS_main_window::add_record()
     query += "'" + guid.toString().toStdString() + "',";
     query += "'" + ui->line_edit_last_name->text().toStdString() + "',";
     query += "'" + ui->line_edit_first_name->text().toStdString() + "',";
-    query += "'" + std::string("guid.toString().toStdString()") + "',"; // Need to add age
+    query += "'" + ui->line_edit_age->text().toStdString() + "',";
     query += "'" + ui->combo_box_gender->currentText().toStdString() + "',";
     query += "'" + ui->line_edit_phone->text().toStdString() + "',";
     query += "'" + ui->line_edit_street->text().toStdString() + "',";
@@ -158,9 +160,12 @@ void FURS_main_window::add_record()
     }
 }
 
-void FURS_main_window::pull_record(QListWidgetItem* item)
+void FURS_main_window::pull_record(int row, int col)
 {
-    std::string sql_query("select * from applications where last_name = '" + item->text().toStdString() + "'");
+    auto name = ui->table_widget_filter->item(row, 0)->text().toStdString();
+    auto id = ui->table_widget_filter->item(row, 1)->text().toStdString();
+
+    std::string sql_query("select * from applications where last_name = '" + name + "' AND " + "id = '" + id + "'");
     std::vector<std::vector<std::string>> results;
     auto success = m_db_management->result_from_query(sql_query, results);
     if (success)
@@ -175,6 +180,7 @@ void FURS_main_window::pull_record(QListWidgetItem* item)
 
 void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
 {
+    ui->line_edit_age_exist->setText(QString(val[3].c_str()));
     ui->line_edit_first_name_exist->setText(QString(val[2].c_str()));
     ui->line_edit_last_name_exist->setText(QString(val[1].c_str()));
     ui->combo_box_gender_exist->setCurrentText(QString(val[4].c_str()));
@@ -215,20 +221,34 @@ void FURS_main_window::tab_selected(int tab_index)
 
 void FURS_main_window::refresh_existing_applications_list_()
 {
-    ui->list_widget_existing_apps->clear();
+    // Set the information for table
+    ui->table_widget_filter->clear();
+    QStringList labels;
+    labels << tr("LAST_NAME") << tr("APPLICATION_ID");
+    ui->table_widget_filter->setHorizontalHeaderLabels(labels);
+
     std::vector<std::vector<std::string>> results;
-    auto success = m_db_management->result_from_query("select last_name from applications", results);
+    auto success = m_db_management->result_from_query("select " + c_table_field_last_name + "," + c_table_field_id + " from applications", results);
     if (success)
     {
-        for (auto values : results)
+        ui->table_widget_filter->setRowCount((results.size()));
+        for (size_t i = 0; i < results.size(); ++i)
         {
-            ui->list_widget_existing_apps->addItem(QString(values[0].c_str()));
+            auto values = results[i];
+            ui->table_widget_filter->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
+            ui->table_widget_filter->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
+
+            /*auto *item = new QTableWidgetItem(QString(values[0].c_str()));
+            item->setStatusTip(QString(values[1].c_str()));
+            ui->table_widget_filter->setItem(i, 0, item);*/
         }
     }
     else
     {
         qDebug() << "Failed to fetch data";
     }
+
+
 }
 
 void FURS_main_window::update_existing_record()
@@ -252,9 +272,9 @@ void FURS_main_window::update_existing_record()
 
     std::string query("UPDATE  " + c_table_applications + " SET ");
     query += c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "',";
-    query += c_table_field_first_name + "='" + ui->line_edit_first_name_exist->text().toStdString() + "',";;
-    //query += c_table_field_age + "='" ; Need to set age
-    query += c_table_field_gender + "='" + ui->combo_box_gender_exist->currentText().toStdString() + "',";;
+    query += c_table_field_first_name + "='" + ui->line_edit_first_name_exist->text().toStdString() + "',";
+    query += c_table_field_age + "='" + ui->line_edit_age_exist->text().toStdString() + "',";
+    query += c_table_field_gender + "='" + ui->combo_box_gender_exist->currentText().toStdString() + "',";
     query += c_table_field_phone + "='" + ui->line_edit_phone_exist->text().toStdString() + "',";
     query += c_table_field_street_address + "='" + ui->line_edit_street_exist->text().toStdString() + "',";
     query += c_table_field_city + "='" + ui->line_edit_city_exist->text().toStdString() + "',";

@@ -4,6 +4,7 @@
 #include <memory>
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QTableWidgetItem>
 
 
 namespace Ui {
@@ -24,7 +25,7 @@ public slots:
     void open_action_window();
     void open_applications_window();
     void add_record();
-    void pull_record(QListWidgetItem* item);
+    void pull_record(int, int);
     void tab_selected(int tab_index);
     void update_existing_record();
 
