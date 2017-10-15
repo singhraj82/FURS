@@ -25,12 +25,15 @@ public slots:
     void open_applications_window();
     void add_record();
     void pull_record(QListWidgetItem* item);
+    void tab_selected(int tab_index);
+    void update_existing_record();
 
 private:
     void initialize_new_application_tab_();
     void initialize_existing_application_tab_();
-    void update_existing_form(const std::shared_ptr<Application>& application);
+    void update_existing_form(const std::vector<std::string>& results);
     void clear_new_application_form_();
+    void refresh_existing_applications_list_();
 
 private:
     Ui::FURS_main_window *ui;

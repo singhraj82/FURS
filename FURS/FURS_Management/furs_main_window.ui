@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -107,7 +107,7 @@
         <item>
          <widget class="QTabWidget" name="registration_tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_new_app">
            <attribute name="title">

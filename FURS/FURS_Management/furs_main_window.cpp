@@ -21,6 +21,9 @@ FURS_main_window::FURS_main_window(QWidget *parent) :
     // Always open main page when application launches.
     ui->furs_stacked_control->setCurrentIndex(0);
 
+    // Always go to new registration tab when clicked on registration button
+    ui->registration_tab_widget->setCurrentIndex(0);
+
     connect(ui->start_button, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->registration_button, SIGNAL(pressed()), this, SLOT(open_applications_window()));
 
@@ -57,10 +60,14 @@ void FURS_main_window::initialize_existing_application_tab_()
     ui->combo_box_instrument_exist->insertItems(0, speciality);
     ui->combo_box_pmt_status_exist->insertItems(0, payment_status);
 
-    connect(ui->list_widget_existing_apps, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(pull_record(QListWidgetItem*)));
+    // Get the latest list of applications from database
+    refresh_existing_applications_list_();
 
+    connect(ui->registration_tab_widget, SIGNAL(currentChanged(int)), this, SLOT(tab_selected(int)));
+    connect(ui->list_widget_existing_apps, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(pull_record(QListWidgetItem*)));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
-    //connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(update_existing_record()));
 }
 
 // Actions stack window
@@ -77,25 +84,6 @@ void FURS_main_window::open_applications_window()
 
 void FURS_main_window::add_record()
 {
-    /*auto application = std::make_shared<Application>();
-    application->set_first_name(ui->line_edit_first_name->text().toStdString());
-    application->set_last_name(ui->line_edit_last_name->text().toStdString());
-    application->set_gender(ui->combo_box_gender->currentText().toStdString());
-    application->set_speciality(ui->combo_box_instrument->currentText().toStdString());
-
-    application->set_street_address(ui->line_edit_street->text().toStdString());
-    application->set_state(ui->combo_box_state->currentText().toStdString());
-    application->set_city(ui->line_edit_city->text().toStdString());
-    application->set_zipcode(ui->line_edit_zipcode->text().toStdString());
-    application->set_phone(ui->line_edit_phone->text().toStdString());
-
-    application->set_application_status(ui->combo_box_app_status->currentText().toStdString());
-    application->set_payment_status(ui->combo_box_pmt_status->currentText().toStdString());
-    application->set_camp(ui->combo_box_camp->currentText().toStdString());
-
-    m_applications.emplace(std::pair<std::string, std::shared_ptr<Application>>(ui->line_edit_first_name->text().toStdString(), application));
-    ui->list_widget_existing_apps->addItem(ui->line_edit_first_name->text());*/
-
     // Generate a GUID for the user id
     QUuid guid =QUuid::createUuid();
 
@@ -131,14 +119,7 @@ void FURS_main_window::add_record()
     query += "'" + ui->combo_box_pmt_status->currentText().toStdString() + "',";
     query += "'" + ui->combo_box_camp->currentText().toStdString() + "')";
 
-    QString str(query.c_str());
-    qDebug() << str;
-
     m_db_management->update_query(query);
-    ui->list_widget_existing_apps->addItem(ui->line_edit_first_name->text());
-
-
-    //auto result = m_db_management->result_from_query("SELECT * FROM new_table");
 
     // After saving the information reset the form to default values
     clear_new_application_form_();
@@ -151,27 +132,25 @@ void FURS_main_window::add_record()
 
 void FURS_main_window::pull_record(QListWidgetItem* item)
 {
-    auto itr = m_applications.find(item->text().toStdString());
-    if (itr != m_applications.end())
-    {
-        update_existing_form(itr->second);
-    }
+    std::string sql_query("select * from applications where last_name = '" + item->text().toStdString() + "'");
+    std::vector<std::vector<std::string>> results = m_db_management->result_from_query(sql_query);
+    update_existing_form(results[0]);
 }
 
-void FURS_main_window::update_existing_form(const std::shared_ptr<Application>& record)
+void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
 {
-    ui->line_edit_first_name_exist->setText(QString(record->first_name().c_str()));
-    ui->line_edit_last_name_exist->setText(QString(record->last_name().c_str()));
-    ui->combo_box_gender_exist->setCurrentText(QString(record->gender().c_str()));
-    ui->combo_box_instrument_exist->setCurrentText(QString(record->speciality().c_str()));
-    ui->line_edit_street_exist->setText(QString(record->street_address().c_str()));
-    ui->combo_box_state_exist->setCurrentText(QString(record->state().c_str()));
-    ui->line_edit_city_exist->setText(QString(record->city().c_str()));
-    ui->line_edit_zipcode_exist->setText(QString(record->zipcode().c_str()));
-    ui->line_edit_phone_exist->setText(QString(record->phone().c_str()));
-    ui->combo_box_app_status_exist->setCurrentText(QString(record->application_status().c_str()));
-    ui->combo_box_pmt_status_exist->setCurrentText(QString(record->payment_status().c_str()));
-    ui->combo_box_camp_exist->setCurrentText(QString(record->camp().c_str()));
+    ui->line_edit_first_name_exist->setText(QString(val[2].c_str()));
+    ui->line_edit_last_name_exist->setText(QString(val[1].c_str()));
+    ui->combo_box_gender_exist->setCurrentText(QString(val[4].c_str()));
+    ui->combo_box_instrument_exist->setCurrentText(QString(val[10].c_str()));
+    ui->line_edit_street_exist->setText(QString(val[6].c_str()));
+    ui->combo_box_state_exist->setCurrentText(QString(val[8].c_str()));
+    ui->line_edit_city_exist->setText(QString(val[7].c_str()));
+    ui->line_edit_zipcode_exist->setText(QString(val[9].c_str()));
+    ui->line_edit_phone_exist->setText(QString(val[5].c_str()));
+    ui->combo_box_app_status_exist->setCurrentText(QString(val[11].c_str()));
+    ui->combo_box_pmt_status_exist->setCurrentText(QString(val[12].c_str()));
+    ui->combo_box_camp_exist->setCurrentText(QString(val[13].c_str()));
 }
 
 void FURS_main_window::clear_new_application_form_()
@@ -190,4 +169,41 @@ void FURS_main_window::clear_new_application_form_()
     ui->combo_box_camp->setCurrentText(QString(camps.at(0)));
 }
 
+void FURS_main_window::tab_selected(int tab_index)
+{
+    if(tab_index == 1)
+    {
+        refresh_existing_applications_list_();
+    }
+}
 
+void FURS_main_window::refresh_existing_applications_list_()
+{
+    ui->list_widget_existing_apps->clear();
+    auto results = m_db_management->result_from_query("select last_name from applications");
+    for (auto values : results)
+    {
+        ui->list_widget_existing_apps->addItem(QString(values[0].c_str()));
+    }
+}
+
+void FURS_main_window::update_existing_record()
+{
+    std::string query("UPDATE  " + c_table_applications + " SET ");
+    query += c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "',";
+    query += c_table_field_first_name + "='" + ui->line_edit_first_name_exist->text().toStdString() + "',";;
+    //query += c_table_field_age + "='" ; Need to set age
+    query += c_table_field_gender + "='" + ui->combo_box_gender_exist->currentText().toStdString() + "',";;
+    query += c_table_field_phone + "='" + ui->line_edit_phone_exist->text().toStdString() + "',";
+    query += c_table_field_street_address + "='" + ui->line_edit_street_exist->text().toStdString() + "',";
+    query += c_table_field_city + "='" + ui->line_edit_city_exist->text().toStdString() + "',";
+    query += c_table_field_state + "='" + ui->combo_box_state_exist->currentText().toStdString() + "',";
+    query += c_table_field_zip_code + "='" + ui->line_edit_zipcode_exist->text().toStdString() + "',";
+    query += c_table_field_speciality + "='" + ui->combo_box_instrument_exist->currentText().toStdString() + "',";
+    query += c_table_field_app_status + "='" + ui->combo_box_app_status_exist->currentText().toStdString() + "',";
+    query += c_table_field_payment_status + "='" + ui->combo_box_pmt_status_exist->currentText().toStdString() + "',";
+    query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "' ";
+    query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "'";
+
+    m_db_management->update_query(query);
+}
