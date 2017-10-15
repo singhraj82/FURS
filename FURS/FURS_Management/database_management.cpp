@@ -1,6 +1,7 @@
 #include "database_management.h"
 #include <QVariant>
 #include <QDebug>
+#include <QCoreApplication>
 
 Database_management::Database_management()
 {
@@ -93,8 +94,10 @@ bool Database_management::select_result_from_query(std::vector<std::string> sele
 
 void Database_management::setup_database_()
 {
+    QString data_path = QCoreApplication::applicationDirPath() + "/../../FURS_Management/furs_data";
+    qDebug() << data_path;
     m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName("C:\\Personal\\CGU\\FURS\\FURS\\FURS_Management\\furs_data");
+    m_db.setDatabaseName(data_path);
 
     if (!m_db.open())
        {

@@ -80,6 +80,8 @@ const QStringList application_status(
   "Not selected",
   "Accepted",
   "Rejected",
+  "Rejected_incomplete",
+  "Rejected_failed_payment",
   "In progress",
 });
 

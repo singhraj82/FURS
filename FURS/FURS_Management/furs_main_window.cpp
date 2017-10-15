@@ -8,6 +8,8 @@
 #include <QUuid>
 #include "constants.h"
 #include <QTableWidget>
+#include "generate_letter.h"
+#include <QDateTime>
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
@@ -68,6 +70,7 @@ void FURS_main_window::initialize_existing_application_tab_()
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
     connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(update_existing_record()));
+    connect(ui->button_letter_existing, SIGNAL(pressed()), this, SLOT(generate_letter()));
 
     connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record(int, int)));
 }
@@ -297,4 +300,28 @@ void FURS_main_window::update_existing_record()
     {
         QMessageBox::warning( this,  tr("FURS"),  tr("FAILED TO SAVE DATA !!!") );
     }
+}
+
+void FURS_main_window::generate_letter()
+{
+    Letter_information letter_info;
+    letter_info.sender                    = "Future Rock Stars(FuRS)";
+    letter_info.address_street            = "123 FURS city";
+    letter_info.address_city              = "East of LA";
+    letter_info.address_zipcode           = "12345";
+    letter_info.address_state             = "California";
+    letter_info.document_title            = ui->combo_box_app_status_exist->currentText();
+    letter_info.clerk_name                = "CLERK";
+    letter_info.date                      = QString(QDateTime::currentDateTime().toString());
+    letter_info.role                      = ui->combo_box_instrument_exist->currentText();
+    letter_info.camp                      = ui->combo_box_camp_exist->currentText();
+    letter_info.receiver_last_name        = ui->line_edit_last_name_exist->text();
+    letter_info.receiver_first_name       = ui->line_edit_first_name_exist->text();
+    letter_info.receiver_address_street   = ui->line_edit_street_exist->text();
+    letter_info.receiver_address_city     = ui->line_edit_city_exist->text();
+    letter_info.receiver_address_state    = ui->combo_box_state_exist->currentText();
+    letter_info.receiver_address_zip_code = ui->line_edit_zipcode_exist->text();
+
+    Generate_letter letter;
+    letter.print_letter(letter_info);
 }
