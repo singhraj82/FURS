@@ -10,6 +10,7 @@
 #include <QTableWidget>
 #include "generate_letter.h"
 #include <QDateTime>
+#include <QFileInfo>
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
@@ -50,12 +51,20 @@ void FURS_main_window::initialize_new_application_tab_()
     ui->combo_box_instrument->insertItems(0, speciality);
     ui->combo_box_pmt_status->insertItems(0, payment_status);
 
+    // temporarily hiding payment status
+    ui->label_pmt_status->hide();
+    ui->combo_box_pmt_status->hide();
+
     connect(ui->button_save, SIGNAL(pressed()), this, SLOT(add_record()));
     connect(ui->button_cancel, SIGNAL(pressed()), this, SLOT(open_action_window()));
 }
 
 void FURS_main_window::initialize_existing_application_tab_()
 {
+    // temporarily hiding payment status
+    ui->label_pmt_status_exist->hide();
+    ui->combo_box_pmt_status_exist->hide();
+
     ui->combo_box_camp_exist->insertItems(0, camps);
     ui->combo_box_gender_exist->insertItems(0, gender);
     ui->combo_box_state_exist->insertItems(0, states);
@@ -105,7 +114,7 @@ void FURS_main_window::add_record()
         ui->combo_box_pmt_status->currentText().toStdString().empty()   ||
         ui->combo_box_camp->currentText().toStdString().empty())
     {
-        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE FIELDS ARE EMPTY !!!") );
+        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
     }
 
@@ -165,6 +174,7 @@ void FURS_main_window::add_record()
 
 void FURS_main_window::pull_record(int row, int col)
 {
+    Q_UNUSED(col);
     auto name = ui->table_widget_filter->item(row, 0)->text().toStdString();
     auto id = ui->table_widget_filter->item(row, 1)->text().toStdString();
 
@@ -269,7 +279,7 @@ void FURS_main_window::update_existing_record()
         ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
         ui->combo_box_camp_exist->currentText().toStdString().empty())
     {
-        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE FIELDS ARE EMPTY !!!") );
+        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
     }
 
@@ -304,6 +314,29 @@ void FURS_main_window::update_existing_record()
 
 void FURS_main_window::generate_letter()
 {
+    if (ui->combo_box_app_status_exist->currentText() == c_not_selected || ui->combo_box_app_status_exist->currentText() == c_in_progress)
+    {
+        QMessageBox::warning( this,  "FURS",  "FAILED TO GENERATE LETTER. INVALID APPLICATION STATUS !!!" );
+        return;
+    }
+
+    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
+        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
+        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
+        ui->line_edit_phone_exist->text().toStdString().empty()               ||
+        ui->line_edit_street_exist->text().toStdString().empty()              ||
+        ui->line_edit_city_exist->text().toStdString().empty()                ||
+        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
+        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
+        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    {
+        QMessageBox::warning( this,  tr("FURS"),  tr("SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
+        return;
+    }
+
     Letter_information letter_info;
     letter_info.sender                    = "Future Rock Stars(FuRS)";
     letter_info.address_street            = "123 FURS city";
@@ -324,4 +357,15 @@ void FURS_main_window::generate_letter()
 
     Generate_letter letter;
     letter.print_letter(letter_info);
+
+    QFileInfo check_file(letter_info.letter_path());
+    // check if file exists and if yes: Is it really a file and no directory?
+    if (check_file.exists() && check_file.isFile())
+    {
+        QMessageBox::information( this,  "FURS",  "LETTER GENERATED SUCCESSFULLY." );
+    }
+    else
+    {
+        QMessageBox::warning( this,  "FURS",  "FAILED TO GENERATE LETTER !!!" );
+    }
 }

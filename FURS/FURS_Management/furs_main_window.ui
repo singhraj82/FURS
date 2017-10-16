@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -36,7 +36,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Welcome to FURS Management System</string>
+           <string>Welcome to FuRS Management System</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -107,7 +107,7 @@
         <item>
          <widget class="QTabWidget" name="registration_tab_widget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_new_app">
            <attribute name="title">
@@ -123,7 +123,7 @@
              </rect>
             </property>
             <property name="text">
-             <string>Camp:</string>
+             <string>*Camp:</string>
             </property>
            </widget>
            <widget class="QComboBox" name="combo_box_camp">
@@ -131,7 +131,7 @@
              <rect>
               <x>70</x>
               <y>20</y>
-              <width>161</width>
+              <width>281</width>
               <height>22</height>
              </rect>
             </property>
@@ -170,7 +170,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>Street Address:</string>
+               <string>*Street Address:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_city">
@@ -183,7 +183,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>City:</string>
+               <string>*City:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_state">
@@ -196,7 +196,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>State:</string>
+               <string>*State:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_phone">
@@ -209,7 +209,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>Phone:</string>
+               <string>*Phone:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_email">
@@ -285,7 +285,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>zipcode:</string>
+               <string>*zipcode:</string>
               </property>
              </widget>
              <widget class="QLineEdit" name="line_edit_zipcode">
@@ -309,7 +309,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Last Name:</string>
+              <string>*Last Name:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_first_name">
@@ -322,7 +322,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>First Name:</string>
+              <string>*First Name:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_dob">
@@ -335,7 +335,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Age:</string>
+              <string>*Age:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_gender">
@@ -348,7 +348,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Gender:</string>
+              <string>*Gender:</string>
              </property>
             </widget>
             <widget class="QLineEdit" name="line_edit_last_name">
@@ -391,7 +391,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Instrument:</string>
+              <string>*Instrument:</string>
              </property>
             </widget>
             <widget class="QComboBox" name="combo_box_instrument">
@@ -493,22 +493,22 @@
            <widget class="QLabel" name="label_app_status">
             <property name="geometry">
              <rect>
-              <x>570</x>
+              <x>430</x>
               <y>20</y>
               <width>121</width>
               <height>20</height>
              </rect>
             </property>
             <property name="text">
-             <string>Application_status:</string>
+             <string>*Application_status:</string>
             </property>
            </widget>
            <widget class="QComboBox" name="combo_box_app_status">
             <property name="geometry">
              <rect>
-              <x>690</x>
+              <x>550</x>
               <y>20</y>
-              <width>161</width>
+              <width>301</width>
               <height>22</height>
              </rect>
             </property>
@@ -547,9 +547,9 @@
            <widget class="QComboBox" name="combo_box_app_status_exist">
             <property name="geometry">
              <rect>
-              <x>680</x>
+              <x>630</x>
               <y>10</y>
-              <width>161</width>
+              <width>221</width>
               <height>22</height>
              </rect>
             </property>
@@ -557,27 +557,27 @@
            <widget class="QLabel" name="label_camp_exist">
             <property name="geometry">
              <rect>
-              <x>310</x>
+              <x>260</x>
               <y>10</y>
               <width>71</width>
               <height>16</height>
              </rect>
             </property>
             <property name="text">
-             <string>Camp:</string>
+             <string>*Camp:</string>
             </property>
            </widget>
            <widget class="QLabel" name="label_app_status_exist">
             <property name="geometry">
              <rect>
-              <x>560</x>
+              <x>510</x>
               <y>10</y>
               <width>121</width>
               <height>20</height>
              </rect>
             </property>
             <property name="text">
-             <string>Application_status:</string>
+             <string>*Application_status:</string>
             </property>
            </widget>
            <widget class="QGroupBox" name="personal_details_group_box_exist">
@@ -614,7 +614,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>Street Address:</string>
+               <string>*Street Address:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_city_exist">
@@ -627,7 +627,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>City:</string>
+               <string>*City:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_state_exist">
@@ -640,7 +640,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>State:</string>
+               <string>*State:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_phone_exist">
@@ -653,7 +653,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>Phone:</string>
+               <string>*Phone:</string>
               </property>
              </widget>
              <widget class="QLabel" name="label_email_exist">
@@ -739,7 +739,7 @@
                </rect>
               </property>
               <property name="text">
-               <string>zipcode:</string>
+               <string>*zipcode:</string>
               </property>
              </widget>
             </widget>
@@ -753,7 +753,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Last Name:</string>
+              <string>*Last Name:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_first_name_exist">
@@ -766,7 +766,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>First Name:</string>
+              <string>*First Name:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_dob_exist">
@@ -779,7 +779,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Date of Birth:</string>
+              <string>*Age:</string>
              </property>
             </widget>
             <widget class="QLabel" name="label_gender_exist">
@@ -792,7 +792,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Gender:</string>
+              <string>*Gender:</string>
              </property>
             </widget>
             <widget class="QLineEdit" name="line_edit_last_name_exist">
@@ -835,7 +835,7 @@
               </rect>
              </property>
              <property name="text">
-              <string>Instrument:</string>
+              <string>*Instrument:</string>
              </property>
             </widget>
             <widget class="QComboBox" name="combo_box_instrument_exist">
@@ -937,7 +937,7 @@
            <widget class="QComboBox" name="combo_box_camp_exist">
             <property name="geometry">
              <rect>
-              <x>380</x>
+              <x>330</x>
               <y>10</y>
               <width>161</width>
               <height>22</height>

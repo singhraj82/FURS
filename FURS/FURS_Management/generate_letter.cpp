@@ -1,6 +1,7 @@
 #include "generate_letter.h"
 #include <QPrinter>
 #include <QTextDocument>
+#include "constants.h"
 
 Generate_letter::Generate_letter()
 {
@@ -66,15 +67,15 @@ void Generate_letter::print_selection_letter_(Letter_information letter_informat
 
 void Generate_letter::print_rejection_letter_(Letter_information letter_information)
 {
-    if (letter_information.document_title == "Rejected_incomplete")
+    if (letter_information.document_title == c_rejected_incomplete_application)
     {
         incomplete_information_letter_(letter_information);
     }
-    else if (letter_information.document_title == "Rejected_failed_payment")
+    else if (letter_information.document_title == c_rejected_failed_payment)
     {
         failed_payment_letter_(letter_information);
     }
-    else if (letter_information.document_title == "Rejected")
+    else if (letter_information.document_title == c_rejected_failed_competition)
     {
         failed_competiton_letter_(letter_information);
     }
@@ -108,12 +109,12 @@ void Generate_letter::failed_payment_letter_(Letter_information letter_informati
         "<h1 align=center>" + letter_information.document_title + "</h1>"
         "<p align=justify>"
            "We at Futre Rock Stars are sad to inform you that you have not been selected for the role of " + letter_information.role +
-           "at the upcoming camp in the week of " + letter_information.camp + "  since your payment failed to process. We would encourage you to please review the "
+           " at the upcoming camp in the week of " + letter_information.camp + "  since your payment failed to process. We would encourage you to please review the "
            "payment information before submitting the application. You can still apply for our upcoming camps. "
            "We would be glad to hear from you soon."
         "</p>"
         "<div align=right>"
-        "sincerly<br>"
+        "Sincerly<br>"
         + letter_information.clerk_name +
         "</div>";
 
@@ -153,12 +154,12 @@ void Generate_letter::incomplete_information_letter_(Letter_information letter_i
         "<h1 align=center>" + letter_information.document_title + "</h1>"
         "<p align=justify>"
            "We at Futre Rock Stars are sad to inform you that you have not been selected for the role of " + letter_information.role +
-           "at the upcoming camp in the week of " + letter_information.camp + "  since your application is incomplete. We would encourage you to please review the application "
+           " at the upcoming camp in the week of " + letter_information.camp + "  since your application is incomplete. We would encourage you to please review the application "
            "requirements before submitting the information. We will refund your fee. You can still apply for our upcoming camps. "
            "We would be glad to hear from you soon."
         "</p>"
         "<div align=right>"
-        "sincerly<br>"
+        "Sincerly<br>"
         + letter_information.clerk_name +
         "</div>";
 
@@ -198,12 +199,12 @@ void Generate_letter::failed_competiton_letter_(Letter_information letter_inform
         "<h1 align=center>" + letter_information.document_title + "</h1>"
         "<p align=justify>"
            "We at Futre Rock Stars are sad to inform you that based on the review of your application you have not been selected for the role of " + letter_information.role +
-           "at the upcoming camp in the week of " + letter_information.camp + ". There was a stiff competition for this position in this camp and you narrowly missed by a small"
-            "margin. So we would encourage yu to practice a little more, improve your skills and apply for the upcoming camps. We will refund your fee"
+           " at the upcoming camp in the week of " + letter_information.camp + ". There was a stiff competition for this position in this camp and you narrowly missed by a small"
+            "margin. So we would encourage you to practice a little more, improve your skills and apply for the upcoming camps. We will refund your fee. "
             "We would be glad to hear from you soon."
         "</p>"
         "<div align=right>"
-        "sincerly<br>"
+        "Sincerly<br>"
         + letter_information.clerk_name +
         "</div>";
 
