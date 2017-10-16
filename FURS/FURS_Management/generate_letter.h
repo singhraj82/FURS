@@ -26,7 +26,7 @@ struct Letter_information
 
     QString letter_path()
     {
-    QString letter_path = QCoreApplication::applicationDirPath() + "/../../" +
+    QString letter_path = QCoreApplication::applicationDirPath() + "/../../letters/" +
             receiver_last_name + "_" +
             receiver_first_name + "_" +
             document_title + ".pdf";
