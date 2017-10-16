@@ -1,7 +1,6 @@
 #include "furs_main_window.h"
 #include <QApplication>
-
-    #include <QDebug>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {

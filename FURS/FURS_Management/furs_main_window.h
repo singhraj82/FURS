@@ -28,6 +28,7 @@ public slots:
     void pull_record(int, int);
     void tab_selected(int tab_index);
     void update_existing_record();
+    void generate_letter();
 
 private:
     void initialize_new_application_tab_();
@@ -36,9 +37,13 @@ private:
     void clear_new_application_form_();
     void refresh_existing_applications_list_();
 
+    bool existing_form_has_empty_fields();
+    bool new_form_has_empty_fields();
+    QString payment_type_();
+    void set_payment_type_radio_(QString payment_type);
+
 private:
     Ui::FURS_main_window *ui;
-    std::map<std::string, std::shared_ptr<Application>> m_applications; 
     std::shared_ptr<Database_management> m_db_management;
 };
 

@@ -8,6 +8,10 @@
 #include <QUuid>
 #include "constants.h"
 #include <QTableWidget>
+#include "generate_letter.h"
+#include <QDateTime>
+#include <QFileInfo>
+#include <QRadioButton>
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
@@ -48,12 +52,21 @@ void FURS_main_window::initialize_new_application_tab_()
     ui->combo_box_instrument->insertItems(0, speciality);
     ui->combo_box_pmt_status->insertItems(0, payment_status);
 
+    // temporarily hiding payment status
+    ui->label_pmt_status->hide();
+    ui->combo_box_pmt_status->hide();
+
     connect(ui->button_save, SIGNAL(pressed()), this, SLOT(add_record()));
     connect(ui->button_cancel, SIGNAL(pressed()), this, SLOT(open_action_window()));
 }
 
 void FURS_main_window::initialize_existing_application_tab_()
 {
+    // temporarily hiding payment status
+    ui->label_pmt_status_exist->hide();
+    ui->combo_box_pmt_status_exist->hide();
+    ui->label_application_id_exist->hide();
+
     ui->combo_box_camp_exist->insertItems(0, camps);
     ui->combo_box_gender_exist->insertItems(0, gender);
     ui->combo_box_state_exist->insertItems(0, states);
@@ -68,6 +81,7 @@ void FURS_main_window::initialize_existing_application_tab_()
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
     connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(update_existing_record()));
+    connect(ui->button_letter_existing, SIGNAL(pressed()), this, SLOT(generate_letter()));
 
     connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record(int, int)));
 }
@@ -89,20 +103,9 @@ void FURS_main_window::open_applications_window()
 
 void FURS_main_window::add_record()
 {
-    if (ui->line_edit_last_name->text().toStdString().empty()           ||
-        ui->line_edit_first_name->text().toStdString().empty()          ||
-        ui->combo_box_gender->currentText().toStdString().empty()       ||
-        ui->line_edit_phone->text().toStdString().empty()               ||
-        ui->line_edit_street->text().toStdString().empty()              ||
-        ui->line_edit_city->text().toStdString().empty()                ||
-        ui->combo_box_state->currentText().toStdString().empty()        ||
-        ui->line_edit_zipcode->text().toStdString().empty()             ||
-        ui->combo_box_instrument->currentText().toStdString().empty()   ||
-        ui->combo_box_app_status->currentText().toStdString().empty()   ||
-        ui->combo_box_pmt_status->currentText().toStdString().empty()   ||
-        ui->combo_box_camp->currentText().toStdString().empty())
+    if (new_form_has_empty_fields())
     {
-        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE FIELDS ARE EMPTY !!!") );
+        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
     }
 
@@ -123,6 +126,7 @@ void FURS_main_window::add_record()
     query += c_table_field_speciality + ",";
     query += c_table_field_app_status + ",";
     query += c_table_field_payment_status + ",";
+    query += c_table_field_pmt_type + ",";
     query += c_table_field_camp + ")";
 
     query += " VALUES(";
@@ -139,6 +143,7 @@ void FURS_main_window::add_record()
     query += "'" + ui->combo_box_instrument->currentText().toStdString() + "',";
     query += "'" + ui->combo_box_app_status->currentText().toStdString() + "',";
     query += "'" + ui->combo_box_pmt_status->currentText().toStdString() + "',";
+    query += "'" + payment_type_().toStdString() + "',";
     query += "'" + ui->combo_box_camp->currentText().toStdString() + "')";
 
     if (m_db_management->update_query(query))
@@ -162,6 +167,7 @@ void FURS_main_window::add_record()
 
 void FURS_main_window::pull_record(int row, int col)
 {
+    Q_UNUSED(col);
     auto name = ui->table_widget_filter->item(row, 0)->text().toStdString();
     auto id = ui->table_widget_filter->item(row, 1)->text().toStdString();
 
@@ -180,6 +186,7 @@ void FURS_main_window::pull_record(int row, int col)
 
 void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
 {
+    ui->label_application_id_exist->setText(QString(val[0].c_str()));
     ui->line_edit_age_exist->setText(QString(val[3].c_str()));
     ui->line_edit_first_name_exist->setText(QString(val[2].c_str()));
     ui->line_edit_last_name_exist->setText(QString(val[1].c_str()));
@@ -193,6 +200,7 @@ void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
     ui->combo_box_app_status_exist->setCurrentText(QString(val[11].c_str()));
     ui->combo_box_pmt_status_exist->setCurrentText(QString(val[12].c_str()));
     ui->combo_box_camp_exist->setCurrentText(QString(val[13].c_str()));
+    set_payment_type_radio_(QString(val[14].c_str()));
 }
 
 void FURS_main_window::clear_new_application_form_()
@@ -209,6 +217,7 @@ void FURS_main_window::clear_new_application_form_()
     ui->combo_box_app_status->setCurrentText(QString(application_status.at(0)));
     ui->combo_box_pmt_status->setCurrentText(QString(payment_status.at(0)));
     ui->combo_box_camp->setCurrentText(QString(camps.at(0)));
+    ui->line_edit_age->setText(QString());
 }
 
 void FURS_main_window::tab_selected(int tab_index)
@@ -253,20 +262,9 @@ void FURS_main_window::refresh_existing_applications_list_()
 
 void FURS_main_window::update_existing_record()
 {
-    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
-        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
-        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
-        ui->line_edit_phone_exist->text().toStdString().empty()               ||
-        ui->line_edit_street_exist->text().toStdString().empty()              ||
-        ui->line_edit_city_exist->text().toStdString().empty()                ||
-        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
-        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
-        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    if (existing_form_has_empty_fields())
     {
-        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE FIELDS ARE EMPTY !!!") );
+        QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
     }
 
@@ -283,8 +281,9 @@ void FURS_main_window::update_existing_record()
     query += c_table_field_speciality + "='" + ui->combo_box_instrument_exist->currentText().toStdString() + "',";
     query += c_table_field_app_status + "='" + ui->combo_box_app_status_exist->currentText().toStdString() + "',";
     query += c_table_field_payment_status + "='" + ui->combo_box_pmt_status_exist->currentText().toStdString() + "',";
-    query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "' ";
-    query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "'";
+    query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "', ";
+    query += c_table_field_pmt_type + "='"+ payment_type_().toStdString()+ "' ";
+    query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "' AND " + "id = '" + ui->label_application_id_exist->text().toStdString() + "'";
 
     if (m_db_management->update_query(query))
     {
@@ -296,5 +295,128 @@ void FURS_main_window::update_existing_record()
     else
     {
         QMessageBox::warning( this,  tr("FURS"),  tr("FAILED TO SAVE DATA !!!") );
+    }
+}
+
+void FURS_main_window::generate_letter()
+{
+    if (ui->combo_box_app_status_exist->currentText() == c_not_selected || ui->combo_box_app_status_exist->currentText() == c_in_progress)
+    {
+        QMessageBox::warning( this,  "FURS",  "FAILED TO GENERATE LETTER. INVALID APPLICATION STATUS !!!" );
+        return;
+    }
+
+    if (existing_form_has_empty_fields())
+    {
+        QMessageBox::warning( this,  tr("FURS"),  tr("SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
+        return;
+    }
+
+    Letter_information letter_info;
+    letter_info.sender                    = "Future Rock Stars(FuRS)";
+    letter_info.address_street            = "123 FURS city";
+    letter_info.address_city              = "East of LA";
+    letter_info.address_zipcode           = "12345";
+    letter_info.address_state             = "California";
+    letter_info.document_title            = ui->combo_box_app_status_exist->currentText();
+    letter_info.clerk_name                = "CLERK";
+    letter_info.date                      = QString(QDateTime::currentDateTime().toString());
+    letter_info.role                      = ui->combo_box_instrument_exist->currentText();
+    letter_info.camp                      = ui->combo_box_camp_exist->currentText();
+    letter_info.receiver_last_name        = ui->line_edit_last_name_exist->text();
+    letter_info.receiver_first_name       = ui->line_edit_first_name_exist->text();
+    letter_info.receiver_address_street   = ui->line_edit_street_exist->text();
+    letter_info.receiver_address_city     = ui->line_edit_city_exist->text();
+    letter_info.receiver_address_state    = ui->combo_box_state_exist->currentText();
+    letter_info.receiver_address_zip_code = ui->line_edit_zipcode_exist->text();
+
+    Generate_letter letter;
+    letter.print_letter(letter_info);
+
+    QFileInfo check_file(letter_info.letter_path());
+    // check if file exists and if yes: Is it really a file and no directory?
+    if (check_file.exists() && check_file.isFile())
+    {
+        QMessageBox::information( this,  "FURS",  "LETTER GENERATED SUCCESSFULLY." );
+    }
+    else
+    {
+        QMessageBox::warning( this,  "FURS",  "FAILED TO GENERATE LETTER !!!" );
+    }
+}
+
+bool FURS_main_window::existing_form_has_empty_fields()
+{
+    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
+        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
+        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
+        ui->line_edit_phone_exist->text().toStdString().empty()               ||
+        ui->line_edit_street_exist->text().toStdString().empty()              ||
+        ui->line_edit_city_exist->text().toStdString().empty()                ||
+        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
+        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
+        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
+        ui->line_edit_age_exist->text().toStdString().empty()                 ||
+        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool FURS_main_window::new_form_has_empty_fields()
+{
+    if (ui->line_edit_last_name->text().toStdString().empty()           ||
+        ui->line_edit_first_name->text().toStdString().empty()          ||
+        ui->combo_box_gender->currentText().toStdString().empty()       ||
+        ui->line_edit_phone->text().toStdString().empty()               ||
+        ui->line_edit_street->text().toStdString().empty()              ||
+        ui->line_edit_city->text().toStdString().empty()                ||
+        ui->combo_box_state->currentText().toStdString().empty()        ||
+        ui->line_edit_zipcode->text().toStdString().empty()             ||
+        ui->combo_box_instrument->currentText().toStdString().empty()   ||
+        ui->combo_box_app_status->currentText().toStdString().empty()   ||
+        ui->combo_box_pmt_status->currentText().toStdString().empty()   ||
+        ui->line_edit_age->text().toStdString().empty()                ||
+        ui->combo_box_camp->currentText().toStdString().empty())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+QString FURS_main_window::payment_type_()
+{
+    if(ui->radio_button_card->isChecked() || ui->radio_button_card_exist->isChecked())
+    {
+        return c_pmt_card;
+    }
+    else if(ui->radio_button_check->isChecked() || ui->radio_button_check_exist->isChecked())
+    {
+        return c_pmt_check;
+    }
+    else
+    {
+        return c_pmt_cashier_check;
+    }
+}
+
+void FURS_main_window::set_payment_type_radio_(QString payment_type)
+{
+    if (payment_type == c_pmt_card)
+    {
+        ui->radio_button_card_exist->setChecked(true);
+    }
+    else if (payment_type == c_pmt_check)
+    {
+        ui->radio_button_check_exist->setChecked(true);
+    }
+    else
+    {
+        ui->radio_button_cash_check_exist->setChecked(true);
     }
 }

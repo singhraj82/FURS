@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         furs_main_window.cpp \
     application.cpp \
-    database_management.cpp
+    database_management.cpp \
+    generate_letter.cpp
 
 HEADERS  += furs_main_window.h \
     constants.h \
     application.h \
-    database_management.h
+    database_management.h \
+    generate_letter.h
 
 FORMS    += furs_main_window.ui
