@@ -27,30 +27,45 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="welcome_page">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="furs_welcome_label">
-          <property name="font">
-           <font>
-            <pointsize>30</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Welcome to FuRS Management System</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="start_button">
-          <property name="text">
-           <string>START</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="furs_welcome_label">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>60</y>
+          <width>790</width>
+          <height>48</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>30</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Welcome to FuRS Management System</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="start_button">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>450</y>
+          <width>691</width>
+          <height>141</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>27</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>START</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="actions_page">
        <widget class="QPushButton" name="registration_button">

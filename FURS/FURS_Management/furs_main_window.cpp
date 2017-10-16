@@ -101,18 +101,7 @@ void FURS_main_window::open_applications_window()
 
 void FURS_main_window::add_record()
 {
-    if (ui->line_edit_last_name->text().toStdString().empty()           ||
-        ui->line_edit_first_name->text().toStdString().empty()          ||
-        ui->combo_box_gender->currentText().toStdString().empty()       ||
-        ui->line_edit_phone->text().toStdString().empty()               ||
-        ui->line_edit_street->text().toStdString().empty()              ||
-        ui->line_edit_city->text().toStdString().empty()                ||
-        ui->combo_box_state->currentText().toStdString().empty()        ||
-        ui->line_edit_zipcode->text().toStdString().empty()             ||
-        ui->combo_box_instrument->currentText().toStdString().empty()   ||
-        ui->combo_box_app_status->currentText().toStdString().empty()   ||
-        ui->combo_box_pmt_status->currentText().toStdString().empty()   ||
-        ui->combo_box_camp->currentText().toStdString().empty())
+    if (new_form_has_empty_fields())
     {
         QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
@@ -222,6 +211,7 @@ void FURS_main_window::clear_new_application_form_()
     ui->combo_box_app_status->setCurrentText(QString(application_status.at(0)));
     ui->combo_box_pmt_status->setCurrentText(QString(payment_status.at(0)));
     ui->combo_box_camp->setCurrentText(QString(camps.at(0)));
+    ui->line_edit_age->setText(QString());
 }
 
 void FURS_main_window::tab_selected(int tab_index)
@@ -266,18 +256,7 @@ void FURS_main_window::refresh_existing_applications_list_()
 
 void FURS_main_window::update_existing_record()
 {
-    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
-        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
-        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
-        ui->line_edit_phone_exist->text().toStdString().empty()               ||
-        ui->line_edit_street_exist->text().toStdString().empty()              ||
-        ui->line_edit_city_exist->text().toStdString().empty()                ||
-        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
-        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
-        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    if (existing_form_has_empty_fields())
     {
         QMessageBox::warning( this,  tr("FURS"),  tr("Cannot save data. SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
@@ -320,18 +299,7 @@ void FURS_main_window::generate_letter()
         return;
     }
 
-    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
-        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
-        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
-        ui->line_edit_phone_exist->text().toStdString().empty()               ||
-        ui->line_edit_street_exist->text().toStdString().empty()              ||
-        ui->line_edit_city_exist->text().toStdString().empty()                ||
-        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
-        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
-        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
-        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    if (existing_form_has_empty_fields())
     {
         QMessageBox::warning( this,  tr("FURS"),  tr("SOME OF THE REQUIRED(*) FIELDS ARE EMPTY !!!") );
         return;
@@ -368,4 +336,48 @@ void FURS_main_window::generate_letter()
     {
         QMessageBox::warning( this,  "FURS",  "FAILED TO GENERATE LETTER !!!" );
     }
+}
+
+bool FURS_main_window::existing_form_has_empty_fields()
+{
+    if (ui->line_edit_last_name_exist->text().toStdString().empty()           ||
+        ui->line_edit_first_name_exist->text().toStdString().empty()          ||
+        ui->combo_box_gender_exist->currentText().toStdString().empty()       ||
+        ui->line_edit_phone_exist->text().toStdString().empty()               ||
+        ui->line_edit_street_exist->text().toStdString().empty()              ||
+        ui->line_edit_city_exist->text().toStdString().empty()                ||
+        ui->combo_box_state_exist->currentText().toStdString().empty()        ||
+        ui->line_edit_zipcode_exist->text().toStdString().empty()             ||
+        ui->combo_box_instrument_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_app_status_exist->currentText().toStdString().empty()   ||
+        ui->combo_box_pmt_status_exist->currentText().toStdString().empty()   ||
+        ui->line_edit_age_exist->text().toStdString().empty()                 ||
+        ui->combo_box_camp_exist->currentText().toStdString().empty())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool FURS_main_window::new_form_has_empty_fields()
+{
+    if (ui->line_edit_last_name->text().toStdString().empty()           ||
+        ui->line_edit_first_name->text().toStdString().empty()          ||
+        ui->combo_box_gender->currentText().toStdString().empty()       ||
+        ui->line_edit_phone->text().toStdString().empty()               ||
+        ui->line_edit_street->text().toStdString().empty()              ||
+        ui->line_edit_city->text().toStdString().empty()                ||
+        ui->combo_box_state->currentText().toStdString().empty()        ||
+        ui->line_edit_zipcode->text().toStdString().empty()             ||
+        ui->combo_box_instrument->currentText().toStdString().empty()   ||
+        ui->combo_box_app_status->currentText().toStdString().empty()   ||
+        ui->combo_box_pmt_status->currentText().toStdString().empty()   ||
+        ui->line_edit_age->text().toStdString().empty()                ||
+        ui->combo_box_camp->currentText().toStdString().empty())
+    {
+        return true;
+    }
+
+    return false;
 }

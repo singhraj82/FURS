@@ -37,6 +37,9 @@ private:
     void clear_new_application_form_();
     void refresh_existing_applications_list_();
 
+    bool existing_form_has_empty_fields();
+    bool new_form_has_empty_fields();
+
 private:
     Ui::FURS_main_window *ui;
     std::shared_ptr<Database_management> m_db_management;
