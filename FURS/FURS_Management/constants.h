@@ -20,6 +20,7 @@ const std::string c_table_field_speciality("speciality");
 const std::string c_table_field_app_status("app_status");
 const std::string c_table_field_payment_status("payment_status");
 const std::string c_table_field_camp("camp");
+const std::string c_table_field_pmt_type("payment_type");
 
 const QString c_not_selected("Not selected");
 const QString c_accepted("Accepted");
@@ -42,6 +43,10 @@ const QString c_august("Week 2-3 August");
 const QString c_male("Male");
 const QString c_female("Female");
 const QString c_other("Other");
+
+const QString c_pmt_check("payment_check");
+const QString c_pmt_card("payment_card");
+const QString c_pmt_cashier_check("payment_cashier_check");
 
 const QStringList states(
 {

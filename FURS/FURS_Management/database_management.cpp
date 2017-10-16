@@ -22,6 +22,7 @@ bool Database_management::update_query(std::string query_string)
         qDebug() << "Failed to execute query: " << query_string.c_str();
     }
 
+    qDebug() << "Failed to execute query: " << query_string.c_str();
     return query_result;
 }
 

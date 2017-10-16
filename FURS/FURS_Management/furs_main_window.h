@@ -39,6 +39,8 @@ private:
 
     bool existing_form_has_empty_fields();
     bool new_form_has_empty_fields();
+    QString payment_type_();
+    void set_payment_type_radio_(QString payment_type);
 
 private:
     Ui::FURS_main_window *ui;

@@ -11,6 +11,7 @@
 #include "generate_letter.h"
 #include <QDateTime>
 #include <QFileInfo>
+#include <QRadioButton>
 
 FURS_main_window::FURS_main_window(QWidget *parent) :
     QMainWindow(parent),
@@ -64,6 +65,7 @@ void FURS_main_window::initialize_existing_application_tab_()
     // temporarily hiding payment status
     ui->label_pmt_status_exist->hide();
     ui->combo_box_pmt_status_exist->hide();
+    ui->label_application_id_exist->hide();
 
     ui->combo_box_camp_exist->insertItems(0, camps);
     ui->combo_box_gender_exist->insertItems(0, gender);
@@ -124,6 +126,7 @@ void FURS_main_window::add_record()
     query += c_table_field_speciality + ",";
     query += c_table_field_app_status + ",";
     query += c_table_field_payment_status + ",";
+    query += c_table_field_pmt_type + ",";
     query += c_table_field_camp + ")";
 
     query += " VALUES(";
@@ -140,6 +143,7 @@ void FURS_main_window::add_record()
     query += "'" + ui->combo_box_instrument->currentText().toStdString() + "',";
     query += "'" + ui->combo_box_app_status->currentText().toStdString() + "',";
     query += "'" + ui->combo_box_pmt_status->currentText().toStdString() + "',";
+    query += "'" + payment_type_().toStdString() + "',";
     query += "'" + ui->combo_box_camp->currentText().toStdString() + "')";
 
     if (m_db_management->update_query(query))
@@ -182,6 +186,7 @@ void FURS_main_window::pull_record(int row, int col)
 
 void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
 {
+    ui->label_application_id_exist->setText(QString(val[0].c_str()));
     ui->line_edit_age_exist->setText(QString(val[3].c_str()));
     ui->line_edit_first_name_exist->setText(QString(val[2].c_str()));
     ui->line_edit_last_name_exist->setText(QString(val[1].c_str()));
@@ -195,6 +200,7 @@ void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
     ui->combo_box_app_status_exist->setCurrentText(QString(val[11].c_str()));
     ui->combo_box_pmt_status_exist->setCurrentText(QString(val[12].c_str()));
     ui->combo_box_camp_exist->setCurrentText(QString(val[13].c_str()));
+    set_payment_type_radio_(QString(val[14].c_str()));
 }
 
 void FURS_main_window::clear_new_application_form_()
@@ -275,8 +281,9 @@ void FURS_main_window::update_existing_record()
     query += c_table_field_speciality + "='" + ui->combo_box_instrument_exist->currentText().toStdString() + "',";
     query += c_table_field_app_status + "='" + ui->combo_box_app_status_exist->currentText().toStdString() + "',";
     query += c_table_field_payment_status + "='" + ui->combo_box_pmt_status_exist->currentText().toStdString() + "',";
-    query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "' ";
-    query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "'";
+    query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "', ";
+    query += c_table_field_pmt_type + "='"+ payment_type_().toStdString()+ "' ";
+    query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "' AND " + "id = '" + ui->label_application_id_exist->text().toStdString() + "'";
 
     if (m_db_management->update_query(query))
     {
@@ -380,4 +387,36 @@ bool FURS_main_window::new_form_has_empty_fields()
     }
 
     return false;
+}
+
+QString FURS_main_window::payment_type_()
+{
+    if(ui->radio_button_card->isChecked() || ui->radio_button_card_exist->isChecked())
+    {
+        return c_pmt_card;
+    }
+    else if(ui->radio_button_check->isChecked() || ui->radio_button_check_exist->isChecked())
+    {
+        return c_pmt_check;
+    }
+    else
+    {
+        return c_pmt_cashier_check;
+    }
+}
+
+void FURS_main_window::set_payment_type_radio_(QString payment_type)
+{
+    if (payment_type == c_pmt_card)
+    {
+        ui->radio_button_card_exist->setChecked(true);
+    }
+    else if (payment_type == c_pmt_check)
+    {
+        ui->radio_button_check_exist->setChecked(true);
+    }
+    else
+    {
+        ui->radio_button_cash_check_exist->setChecked(true);
+    }
 }

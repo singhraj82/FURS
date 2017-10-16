@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <widget class="QLabel" name="furs_welcome_label">
@@ -122,7 +122,7 @@
         <item>
          <widget class="QTabWidget" name="registration_tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_new_app">
            <attribute name="title">
@@ -457,7 +457,7 @@
                <string>Card</string>
               </property>
              </widget>
-             <widget class="QRadioButton" name="radio_button_check_2">
+             <widget class="QRadioButton" name="radio_button_cash_check">
               <property name="geometry">
                <rect>
                 <x>150</x>
@@ -901,7 +901,7 @@
                <string>Card</string>
               </property>
              </widget>
-             <widget class="QRadioButton" name="radio_button_check_exist_exist">
+             <widget class="QRadioButton" name="radio_button_cash_check_exist">
               <property name="geometry">
                <rect>
                 <x>150</x>
@@ -946,6 +946,19 @@
                <width>231</width>
                <height>20</height>
               </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_application_id_exist">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>180</y>
+               <width>221</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
              </property>
             </widget>
            </widget>
