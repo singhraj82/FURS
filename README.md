@@ -16,7 +16,17 @@ This project is implemented in C++ usin Qt Framework. Qt is a cross platform C++
 
 To build the project install the latest version of Open Source Qt from https://www.qt.io/download-qt-for-application-development. It supports various compilers. Make sure you select the mingw for your installation.
 
+1. Get the project from the repository.
+2. Start the Qt creator IDE to build. link and run the project.
+3. Open the .pro file of the project in to the Qt Creator. 
+4. When loadin it first time configure it with the mingw KIT and compiler settings.
+5. Select the build mode Debug or Release. Build the project.
+6. Then click the Green trianhgle button to run the project.
+
 
 ## Tests
 
 This project currently uses Manual testing
+
+## Deploy
+To deploy the project run $QTDIR/bin/windeployqt.exe with path to the application executable. It will pull all the dependencies and put it with the executable.
