@@ -21,6 +21,10 @@ const std::string c_table_field_app_status("app_status");
 const std::string c_table_field_payment_status("payment_status");
 const std::string c_table_field_camp("camp");
 const std::string c_table_field_pmt_type("payment_type");
+const std::string c_table_field_check_in_status("checkin_status");
+const std::string c_table_field_equipments("equipments");
+const std::string c_table_field_clothes("clothes");
+const std::string c_table_field_forms("forms");
 
 const QString c_not_selected("Not selected");
 const QString c_accepted("Accepted");

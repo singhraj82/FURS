@@ -32,9 +32,11 @@ FURS_main_window::FURS_main_window(QWidget *parent) :
     connect(ui->start_button, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->registration_button, SIGNAL(pressed()), this, SLOT(open_applications_window()));
 
+    //ui->checkin_button->setEnabled(false);
     // initialization
     initialize_new_application_tab_();
     initialize_existing_application_tab_();
+    initialize_checkin_tab_();
 }
 
 
@@ -75,15 +77,24 @@ void FURS_main_window::initialize_existing_application_tab_()
     ui->combo_box_pmt_status_exist->insertItems(0, payment_status);
 
     // Get the latest list of applications from database
-    refresh_existing_applications_list_();
+    refresh_existing_applications_list_(ui->table_widget_filter);
 
     connect(ui->registration_tab_widget, SIGNAL(currentChanged(int)), this, SLOT(tab_selected(int)));
-    connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
+    //connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(save_and_open_action_window()));
     connect(ui->button_cancel_existing, SIGNAL(pressed()), this, SLOT(open_action_window()));
     connect(ui->button_apply_existing, SIGNAL(pressed()), this, SLOT(update_existing_record()));
     connect(ui->button_letter_existing, SIGNAL(pressed()), this, SLOT(generate_letter()));
 
-    connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record(int, int)));
+    connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record_existing(int, int)));
+}
+
+void FURS_main_window::initialize_checkin_tab_()
+{
+    connect(ui->checkin_button, SIGNAL(pressed()), this, SLOT(open_checkin_page()));
+
+    // Get the latest list of applications from database
+    refresh_existing_applications_list_(ui->table_existing_applicants);
+    connect(ui->table_existing_applicants, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record_checkin(int, int)));
 }
 
 // Actions stack window
@@ -165,7 +176,7 @@ void FURS_main_window::add_record()
     }
 }
 
-void FURS_main_window::pull_record(int row, int col)
+void FURS_main_window::pull_record_existing(int row, int col)
 {
     Q_UNUSED(col);
     auto name = ui->table_widget_filter->item(row, 0)->text().toStdString();
@@ -203,6 +214,75 @@ void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
     set_payment_type_radio_(QString(val[14].c_str()));
 }
 
+void FURS_main_window::pull_record_checkin(int row, int col)
+{
+    Q_UNUSED(col);
+    auto name = ui->table_existing_applicants->item(row, 0)->text().toStdString();
+    auto id = ui->table_existing_applicants->item(row, 1)->text().toStdString();
+
+    std::string sql_query("select * from applications where last_name = '" + name + "' AND " + "id = '" + id + "'");
+    std::vector<std::vector<std::string>> results;
+    auto success = m_db_management->result_from_query(sql_query, results);
+    if (success)
+    {
+        update_checkin_form(results[0]);
+    }
+    else
+    {
+        qDebug() << "Failed to fetch data";
+    }
+}
+
+void FURS_main_window::update_checkin_form(const std::vector<std::string>& val)
+{
+    ui->label_registration_id_value->setText(QString(val[0].c_str()));
+    ui->line_edit_last_name_checkin->setText(QString(val[1].c_str()));
+    ui->line_edit_first_name_checkin->setText(QString(val[2].c_str()));
+    ui->label_checkin_status_value->setText(QString(val[15].c_str()));
+    if (val[15] == "Checked_in")
+    {
+        ui->button_check_in_applicant->setEnabled(false);
+    }
+    else
+    {
+        ui->button_check_in_applicant->setEnabled(true);
+    }
+
+    if (val[16] == "no")
+    {
+        ui->check_box_equipment->setChecked(false);
+        ui->check_box_equipment->setEnabled(true);
+    }
+    else
+    {
+        ui->check_box_equipment->setChecked(true);
+        ui->check_box_equipment->setEnabled(false);
+    }
+
+    if (val[17] == "no")
+    {
+        ui->check_box_clothes->setChecked(false);
+        ui->check_box_clothes->setEnabled(true);
+    }
+    else
+    {
+        ui->check_box_clothes->setChecked(true);
+        ui->check_box_clothes->setEnabled(false);
+    }
+
+    if (val[18] == "no")
+    {
+        ui->check_box_forms->setChecked(false);
+        ui->check_box_forms->setEnabled(true);
+    }
+    else
+    {
+        ui->check_box_forms->setChecked(true);
+        ui->check_box_forms->setEnabled(false);
+    }
+
+}
+
 void FURS_main_window::clear_new_application_form_()
 {
     ui->line_edit_first_name->setText(QString());
@@ -222,16 +302,17 @@ void FURS_main_window::clear_new_application_form_()
 
 void FURS_main_window::tab_selected(int tab_index)
 {
+    // On clicking the existing tab refresh the list
     if(tab_index == 1)
     {
-        refresh_existing_applications_list_();
+        refresh_existing_applications_list_(ui->table_widget_filter);
     }
 }
 
-void FURS_main_window::refresh_existing_applications_list_()
+void FURS_main_window::refresh_existing_applications_list_(QTableWidget *table_widget_filter)
 {
     // Set the information for table
-    ui->table_widget_filter->clear();
+    table_widget_filter->clear();
     QStringList labels;
     labels << tr("LAST_NAME") << tr("APPLICATION_ID");
     ui->table_widget_filter->setHorizontalHeaderLabels(labels);
@@ -240,12 +321,12 @@ void FURS_main_window::refresh_existing_applications_list_()
     auto success = m_db_management->result_from_query("select " + c_table_field_last_name + "," + c_table_field_id + " from applications", results);
     if (success)
     {
-        ui->table_widget_filter->setRowCount((results.size()));
+        table_widget_filter->setRowCount((results.size()));
         for (size_t i = 0; i < results.size(); ++i)
         {
             auto values = results[i];
-            ui->table_widget_filter->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
-            ui->table_widget_filter->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
+            table_widget_filter->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
+            table_widget_filter->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
 
             /*auto *item = new QTableWidgetItem(QString(values[0].c_str()));
             item->setStatusTip(QString(values[1].c_str()));
@@ -418,5 +499,50 @@ void FURS_main_window::set_payment_type_radio_(QString payment_type)
     else
     {
         ui->radio_button_cash_check_exist->setChecked(true);
+    }
+}
+
+void FURS_main_window::open_checkin_page()
+{
+    ui->furs_stacked_control->setCurrentIndex(3);
+
+    connect(ui->button_cancel_check_in_applicant, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    connect(ui->button_check_in_applicant, SIGNAL(pressed()), this, SLOT(checkin_applicant()));
+}
+
+void FURS_main_window::checkin_applicant()
+{
+    if (!ui->check_box_equipment->isChecked() || !ui->check_box_clothes->isChecked() || !ui->check_box_forms->isChecked())
+    {
+        QMessageBox::warning( this,  tr("FURS"),  tr("Some required items are missing!!!") );
+    }
+    else
+    {
+        std::string query("UPDATE  " + c_table_applications + " SET ");
+        query += c_table_field_check_in_status + "='Checked_in',";
+        query += c_table_field_equipments + "='yes',";
+        query += c_table_field_clothes + "='yes',";
+        query += c_table_field_forms+ "='yes'";
+        query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_checkin->text().toStdString() + "' AND " + "id = '" + ui->label_registration_id_value->text().toStdString() + "'";
+
+        if (m_db_management->update_query(query))
+        {
+            // once checked in successfukky update the status and grey out the check boxes
+            ui->label_checkin_status_value->setText("Checked_in");
+            ui->button_check_in_applicant->setEnabled((false));
+
+            ui->check_box_equipment->setEnabled(false);
+            ui->check_box_clothes->setEnabled(false);
+            ui->check_box_forms->setEnabled(false);
+
+            QMessageBox msg_box;
+            msg_box.setWindowTitle("FURS");
+            msg_box.setText("Application updated successfully");
+            msg_box.exec();
+        }
+        else
+        {
+            QMessageBox::warning( this,  tr("FURS"),  tr("FAILED TO SAVE DATA !!!") );
+        }
     }
 }
