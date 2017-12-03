@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <widget class="QLabel" name="furs_welcome_label">
@@ -71,8 +71,8 @@
        <widget class="QPushButton" name="registration_button">
         <property name="geometry">
          <rect>
-          <x>330</x>
-          <y>160</y>
+          <x>100</x>
+          <y>90</y>
           <width>241</width>
           <height>101</height>
          </rect>
@@ -95,8 +95,8 @@
        <widget class="QPushButton" name="checkin_button">
         <property name="geometry">
          <rect>
-          <x>330</x>
-          <y>350</y>
+          <x>490</x>
+          <y>90</y>
           <width>241</width>
           <height>101</height>
          </rect>
@@ -114,6 +114,54 @@
         </property>
         <property name="text">
          <string>Check-in</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="dorms_button">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>380</y>
+          <width>241</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Assign Dorms</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="bands_button">
+        <property name="geometry">
+         <rect>
+          <x>490</x>
+          <y>380</y>
+          <width>241</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Assign Bands</string>
         </property>
        </widget>
       </widget>
@@ -1265,6 +1313,132 @@
         </property>
         <property name="text">
          <string>Not_checked_in</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="dorms_page">
+       <widget class="QPushButton" name="button_dorms_exit">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>580</y>
+          <width>151</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Exit</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="group_box_girls_dorms">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>20</y>
+          <width>781</width>
+          <height>241</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Girls Dorms</string>
+        </property>
+        <widget class="QListWidget" name="girls_dorm_1">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>20</y>
+           <width>171</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QListWidget" name="girls_dorm_2">
+         <property name="geometry">
+          <rect>
+           <x>300</x>
+           <y>20</y>
+           <width>171</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QListWidget" name="girls_dorm_3">
+         <property name="geometry">
+          <rect>
+           <x>590</x>
+           <y>20</y>
+           <width>161</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="group_box_boys_dorms">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>310</y>
+          <width>781</width>
+          <height>241</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Boys Dorms</string>
+        </property>
+        <widget class="QListWidget" name="boys_dorm_1">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>30</y>
+           <width>171</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QListWidget" name="boys_dorm_2">
+         <property name="geometry">
+          <rect>
+           <x>300</x>
+           <y>30</y>
+           <width>171</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QListWidget" name="boys_dorm_3">
+         <property name="geometry">
+          <rect>
+           <x>580</x>
+           <y>30</y>
+           <width>171</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="bands_page">
+       <widget class="QPushButton" name="button_bands_exit">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>580</y>
+          <width>151</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Exit</string>
         </property>
        </widget>
       </widget>

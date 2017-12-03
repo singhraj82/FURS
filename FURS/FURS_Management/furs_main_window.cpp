@@ -37,8 +37,9 @@ FURS_main_window::FURS_main_window(QWidget *parent) :
     initialize_new_application_tab_();
     initialize_existing_application_tab_();
     initialize_checkin_tab_();
+    initialize_dorms_tab_();
+    initialize_bands_tab_();
 }
-
 
 FURS_main_window::~FURS_main_window()
 {
@@ -90,11 +91,24 @@ void FURS_main_window::initialize_existing_application_tab_()
 
 void FURS_main_window::initialize_checkin_tab_()
 {
+    ui->line_edit_last_name_checkin->setEnabled(false);
+    ui->line_edit_first_name_checkin->setEnabled(false);
+
     connect(ui->checkin_button, SIGNAL(pressed()), this, SLOT(open_checkin_page()));
 
     // Get the latest list of applications from database
     refresh_existing_applications_list_(ui->table_existing_applicants);
     connect(ui->table_existing_applicants, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record_checkin(int, int)));
+}
+
+void FURS_main_window::initialize_dorms_tab_()
+{
+    connect(ui->dorms_button, SIGNAL(pressed()), this, SLOT(open_dorms_page()));
+}
+
+void FURS_main_window::initialize_bands_tab_()
+{
+    connect(ui->bands_button, SIGNAL(pressed()), this, SLOT(open_bands_page()));
 }
 
 // Actions stack window
@@ -546,3 +560,50 @@ void FURS_main_window::checkin_applicant()
         }
     }
 }
+
+void FURS_main_window::open_dorms_page()
+{
+    connect(ui->button_dorms_exit, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    ui->furs_stacked_control->setCurrentIndex(4);
+
+    //Set dorms widget drag-drop enabled
+    ui->boys_dorm_1->setAcceptDrops(true);
+    ui->boys_dorm_1->setDragEnabled(true);
+    ui->boys_dorm_2->setAcceptDrops(true);
+    ui->boys_dorm_2->setDragEnabled(true);
+    ui->boys_dorm_3->setAcceptDrops(true);
+    ui->boys_dorm_3->setDragEnabled(true);
+
+    ui->girls_dorm_1->setAcceptDrops(true);
+    ui->girls_dorm_1->setDragEnabled(true);
+    ui->girls_dorm_2->setAcceptDrops(true);
+    ui->girls_dorm_2->setDragEnabled(true);
+    ui->girls_dorm_3->setAcceptDrops(true);
+    ui->girls_dorm_3->setDragEnabled(true);
+
+    //Assign the dorms
+    assign_dorms_();
+}
+
+void FURS_main_window::assign_dorms_()
+{
+    //Get all the girls and sort by age
+    std::string sql_query("select * from applications");
+    std::vector<std::vector<std::string>> results;
+    auto success = m_db_management->result_from_query(sql_query, results);
+    if (success)
+    {
+
+    }
+    else
+    {
+        qDebug() << "Failed to fetch data";
+    }
+}
+
+void FURS_main_window::open_bands_page()
+{
+    ui->furs_stacked_control->setCurrentIndex(5);
+    connect(ui->button_bands_exit, SIGNAL(pressed()), this, SLOT(open_action_window()));
+}
+

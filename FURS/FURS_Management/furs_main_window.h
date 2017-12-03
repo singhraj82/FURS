@@ -32,11 +32,15 @@ public slots:
     void generate_letter();
     void open_checkin_page();
     void checkin_applicant();
+    void open_dorms_page();
+    void open_bands_page();
 
 private:
     void initialize_new_application_tab_();
     void initialize_existing_application_tab_();
     void initialize_checkin_tab_();
+    void initialize_dorms_tab_();
+    void initialize_bands_tab_();
     void update_existing_form(const std::vector<std::string>& results);
     void update_checkin_form(const std::vector<std::string>& results);
     void clear_new_application_form_();
@@ -46,6 +50,8 @@ private:
     bool new_form_has_empty_fields();
     QString payment_type_();
     void set_payment_type_radio_(QString payment_type);
+
+    void assign_dorms_();
 
 private:
     Ui::FURS_main_window *ui;
