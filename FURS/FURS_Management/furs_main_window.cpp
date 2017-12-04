@@ -709,7 +709,7 @@ void FURS_main_window::assign_dorms_()
     ui->table_dorms->clear();
 
     QStringList labels;
-    labels << tr("DORM_ID") << tr("LAST_NAME") << tr("AGE") << tr("APPLICATION_ID");
+    labels << tr("DORM_ID") << tr("LAST_NAME") << tr("FIRST_NAME") << tr("AGE") << tr("APPLICATION_ID");
     ui->table_dorms->setHorizontalHeaderLabels(labels);
 
     std::vector<int> girls_dorms = {1,2,3};
@@ -717,7 +717,7 @@ void FURS_main_window::assign_dorms_()
 
     // Girls Dorms
     std::vector<std::vector<std::string>> results;
-    std::string sql_query("select last_name, id, age from applications where gender = 'Female' and app_status = 'Accepted'");
+    std::string sql_query("select last_name, first_name, id, age from applications where gender = 'Female' and app_status = 'Accepted'");
     auto success = m_db_management->result_from_query(sql_query, results);
     int j = 0;
     if (success)
@@ -727,7 +727,7 @@ void FURS_main_window::assign_dorms_()
         std::vector<std::pair<int, std::vector<std::string>>> girls_data;
         for (auto res : results)
         {
-            girls_data.emplace_back(std::make_pair<int, std::vector<std::string>>(std::stoi(res[2]), {res[0], res[1]}));
+            girls_data.emplace_back(std::make_pair<int, std::vector<std::string>>(std::stoi(res[3]), {res[0], res[1], res[2]}));
         }
 
         std::sort(girls_data.begin(), girls_data.end());
@@ -739,16 +739,18 @@ void FURS_main_window::assign_dorms_()
                 auto val_begin = girls_data.begin();
                 ui->table_dorms->setItem(j, 0, new QTableWidgetItem(QString(std::to_string(girls_dorms.at(i)).c_str())));
                 ui->table_dorms->setItem(j, 1, new QTableWidgetItem(QString(val_begin->second[0].c_str())));
-                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(std::to_string(val_begin->first).c_str())));
-                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(val_begin->second[1].c_str())));
+                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(val_begin->second[1].c_str())));
+                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(std::to_string(val_begin->first).c_str())));
+                ui->table_dorms->setItem(j, 4, new QTableWidgetItem(QString(val_begin->second[2].c_str())));
                 girls_data.erase(val_begin);
                 ++j;
 
                 auto val_end = girls_data.rbegin();
                 ui->table_dorms->setItem(j, 0, new QTableWidgetItem(QString(std::to_string(girls_dorms.at(i)).c_str())));
                 ui->table_dorms->setItem(j, 1, new QTableWidgetItem(QString(val_end->second[0].c_str())));
-                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(std::to_string(val_end->first).c_str())));
-                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(val_end->second[1].c_str())));
+                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(val_end->second[1].c_str())));
+                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(std::to_string(val_end->first).c_str())));
+                ui->table_dorms->setItem(j, 4, new QTableWidgetItem(QString(val_end->second[2].c_str())));
                 girls_data.erase(--girls_data.end());
                 ++j;
             }
@@ -764,14 +766,14 @@ void FURS_main_window::assign_dorms_()
 
     // Boys Dorms
     results.clear();
-    std::string sql_query1("select last_name, id, age from applications where gender = 'Male' and app_status = 'Accepted'");
+    std::string sql_query1("select last_name, first_name, id, age from applications where gender = 'Male' and app_status = 'Accepted'");
     success = m_db_management->result_from_query(sql_query1, results);
     if (success)
     {
         std::vector<std::pair<int, std::vector<std::string>>> boys_data;
         for (auto res : results)
         {
-            boys_data.emplace_back(std::make_pair<int, std::vector<std::string>>(std::stoi(res[2]), {res[0], res[1]}));
+            boys_data.emplace_back(std::make_pair<int, std::vector<std::string>>(std::stoi(res[3]), {res[0], res[1], res[2]}));
         }
 
         std::sort(boys_data.begin(), boys_data.end());
@@ -783,16 +785,18 @@ void FURS_main_window::assign_dorms_()
                 auto val_begin = boys_data.begin();
                 ui->table_dorms->setItem(j, 0, new QTableWidgetItem(QString(std::to_string(boys_dorms.at(i)).c_str())));
                 ui->table_dorms->setItem(j, 1, new QTableWidgetItem(QString(val_begin->second[0].c_str())));
-                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(std::to_string(val_begin->first).c_str())));
-                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(val_begin->second[1].c_str())));
+                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(val_begin->second[1].c_str())));
+                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(std::to_string(val_begin->first).c_str())));
+                ui->table_dorms->setItem(j, 4, new QTableWidgetItem(QString(val_begin->second[2].c_str())));
                 boys_data.erase(val_begin);
                 ++j;
 
                 auto val_end = boys_data.rbegin();
                 ui->table_dorms->setItem(j, 0, new QTableWidgetItem(QString(std::to_string(boys_dorms.at(i)).c_str())));
                 ui->table_dorms->setItem(j, 1, new QTableWidgetItem(QString(val_end->second[0].c_str())));
-                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(std::to_string(val_end->first).c_str())));
-                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(val_end->second[1].c_str())));
+                ui->table_dorms->setItem(j, 2, new QTableWidgetItem(QString(val_end->second[1].c_str())));
+                ui->table_dorms->setItem(j, 3, new QTableWidgetItem(QString(std::to_string(val_end->first).c_str())));
+                ui->table_dorms->setItem(j, 4, new QTableWidgetItem(QString(val_end->second[2].c_str())));
                 boys_data.erase(--boys_data.end());
                 ++j;
             }
