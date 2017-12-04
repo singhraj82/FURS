@@ -28,12 +28,19 @@ To build the project install the latest version of Open Source Qt from https://w
 
 This project currently uses Manual testing
 
-## Deploy
+## Deploy Manually
 To deploy the project run $QTDIR/bin/windeployqt.exe with path to the application executable. It will pull all the dependencies and put it with the executable.
 
 ## Milestone 2.0
 1. Implement the check-in process for selected candidates.
-2. Assignment of Dorms 
-3. Assignment of Primary bands
-4. Assignment of secondary bands
-5. Provision to manage and maintain Waitlist
+2. Assignment of Dorms .
+3. Assignment of Primary bands.
+4. Assignment of secondary bands.
+5. Provision to manage and maintain Waitlist.
+
+## Build and Deploy Automatically
+1. Make sure that you have Qt SDK and Qt Creator installed.
+2. Set your installed Qt path(folder that contains bin) to QTDIR. e.g QTDIR=C:\Qt\5.8\mingw53_32
+3. Get the source code from repository.
+4. Goto the source code folder and run FuRS_Management_Script.bat. This will create required project files, necessary folders and build the code in release mode, generate executable and also pull in all the required dependencies in to the release folder.
+
