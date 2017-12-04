@@ -77,6 +77,7 @@ void FURS_main_window::initialize_existing_application_tab_()
     ui->combo_box_app_status_exist->insertItems(0, application_status);
     ui->combo_box_instrument_exist->insertItems(0, speciality);
     ui->combo_box_pmt_status_exist->insertItems(0, payment_status);
+    ui->check_box_waitlist_filter->setChecked(false);
 
     // Get the latest list of applications from database
     refresh_existing_applications_list_(ui->table_widget_filter);
@@ -88,6 +89,7 @@ void FURS_main_window::initialize_existing_application_tab_()
     connect(ui->button_letter_existing, SIGNAL(pressed()), this, SLOT(generate_letter()));
 
     connect(ui->table_widget_filter, SIGNAL(cellClicked(int, int)), this, SLOT(pull_record_existing(int, int)));
+    connect(ui->check_box_waitlist_filter, SIGNAL(stateChanged(int)), this, SLOT(update_existing_record_page(int)));
 }
 
 void FURS_main_window::initialize_checkin_tab_()
@@ -228,6 +230,8 @@ void FURS_main_window::update_existing_form(const std::vector<std::string>& val)
     ui->combo_box_pmt_status_exist->setCurrentText(QString(val[12].c_str()));
     ui->combo_box_camp_exist->setCurrentText(QString(val[13].c_str()));
     set_payment_type_radio_(QString(val[14].c_str()));
+    set_waitlist_check_box_(QString(val[22].c_str()));
+    ui->line_edit_rank_exist->setText(QString(val[20].c_str()));
 }
 
 void FURS_main_window::pull_record_checkin(int row, int col)
@@ -333,8 +337,14 @@ void FURS_main_window::refresh_existing_applications_list_(QTableWidget *table_w
     labels << tr("LAST_NAME") << tr("APPLICATION_ID");
     table_widget_filter->setHorizontalHeaderLabels(labels);
 
+    std::string query = "select " + c_table_field_last_name + "," + c_table_field_id + " from applications";
+    if (ui->check_box_waitlist_filter->isChecked())
+    {
+        query += " WHERE " + c_table_field_waitlist + " = 'yes'";
+    }
+
     std::vector<std::vector<std::string>> results;
-    auto success = m_db_management->result_from_query("select " + c_table_field_last_name + "," + c_table_field_id + " from applications", results);
+    auto success = m_db_management->result_from_query(query, results);
     if (success)
     {
         table_widget_filter->setRowCount((results.size()));
@@ -375,7 +385,9 @@ void FURS_main_window::update_existing_record()
     query += c_table_field_app_status + "='" + ui->combo_box_app_status_exist->currentText().toStdString() + "',";
     query += c_table_field_payment_status + "='" + ui->combo_box_pmt_status_exist->currentText().toStdString() + "',";
     query += c_table_field_camp + "='"+ ui->combo_box_camp_exist->currentText().toStdString()+ "', ";
-    query += c_table_field_pmt_type + "='"+ payment_type_().toStdString()+ "' ";
+    query += c_table_field_pmt_type + "='"+ payment_type_().toStdString()+ "',  ";
+    query += c_table_field_waitlist + "='"+ waitlist_filter_result_().toStdString()+ "',  ";
+    query += c_table_field_speciality_rank + "='" + ui->line_edit_rank_exist->text().toStdString() + "' ";
     query += " WHERE " + c_table_field_last_name + "='" + ui->line_edit_last_name_exist->text().toStdString() + "' AND " + "id = '" + ui->label_application_id_exist->text().toStdString() + "'";
 
     if (m_db_management->update_query(query))
@@ -422,6 +434,8 @@ void FURS_main_window::generate_letter()
     letter_info.receiver_address_city     = ui->line_edit_city_exist->text();
     letter_info.receiver_address_state    = ui->combo_box_state_exist->currentText();
     letter_info.receiver_address_zip_code = ui->line_edit_zipcode_exist->text();
+    letter_info.wait_list                 = waitlist_filter_result_();
+
 
     Generate_letter letter;
     letter.print_letter(letter_info);
@@ -498,6 +512,22 @@ QString FURS_main_window::payment_type_()
     }
 }
 
+QString FURS_main_window::waitlist_filter_result_()
+{
+    if(ui->check_box_waitlist->isChecked())
+    {
+        return "yes";
+    }
+    else if(!ui->check_box_waitlist->isChecked())
+    {
+        return "no";
+    }
+    else
+    {
+        return "no";
+    }
+}
+
 void FURS_main_window::set_payment_type_radio_(QString payment_type)
 {
     if (payment_type == c_pmt_card)
@@ -511,6 +541,22 @@ void FURS_main_window::set_payment_type_radio_(QString payment_type)
     else
     {
         ui->radio_button_cash_check_exist->setChecked(true);
+    }
+}
+
+void FURS_main_window::set_waitlist_check_box_(QString waitlist)
+{
+    if (waitlist == "no")
+    {
+        ui->check_box_waitlist->setChecked(false);
+    }
+    else if (waitlist == "yes")
+    {
+        ui->check_box_waitlist->setChecked(true);
+    }
+    else
+    {
+        ui->check_box_waitlist->setChecked(false);
     }
 }
 
@@ -2537,4 +2583,9 @@ void FURS_main_window::reset_bands()
 void FURS_main_window::reset_secondary_bands()
 {
     assign_same_gender_bands_();
+}
+
+void FURS_main_window::update_existing_record_page(int /*state*/)
+{
+    refresh_existing_applications_list_(ui->table_widget_filter);
 }

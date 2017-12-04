@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="furs_stacked_control">
       <property name="currentIndex">
-       <number>6</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="welcome_page">
        <widget class="QLabel" name="furs_welcome_label">
@@ -212,7 +212,7 @@
         <item>
          <widget class="QTabWidget" name="registration_tab_widget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_new_app">
            <attribute name="title">
@@ -1051,6 +1051,42 @@
               <string>TextLabel</string>
              </property>
             </widget>
+            <widget class="QCheckBox" name="check_box_waitlist">
+             <property name="geometry">
+              <rect>
+               <x>380</x>
+               <y>20</y>
+               <width>131</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>In Waitlist</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_rank_exist">
+             <property name="geometry">
+              <rect>
+               <x>380</x>
+               <y>60</y>
+               <width>71</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Rank:</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="line_edit_rank_exist">
+             <property name="geometry">
+              <rect>
+               <x>430</x>
+               <y>60</y>
+               <width>51</width>
+               <height>20</height>
+              </rect>
+             </property>
+            </widget>
            </widget>
            <widget class="QComboBox" name="combo_box_camp_exist">
             <property name="geometry">
@@ -1105,7 +1141,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>50</y>
+              <y>80</y>
               <width>256</width>
               <height>531</height>
              </rect>
@@ -1127,6 +1163,19 @@
             </property>
             <property name="text">
              <string>Generate Letter</string>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="check_box_waitlist_filter">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>40</y>
+              <width>241</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Filter by Waitlist</string>
             </property>
            </widget>
           </widget>

@@ -37,6 +37,7 @@ public slots:
     void open_secondary_bands_page();
     void reset_bands();
     void reset_secondary_bands();
+    void update_existing_record_page(int state);
 
 private:
     void initialize_new_application_tab_();
@@ -52,7 +53,9 @@ private:
     bool existing_form_has_empty_fields();
     bool new_form_has_empty_fields();
     QString payment_type_();
+    QString waitlist_filter_result_();
     void set_payment_type_radio_(QString payment_type);
+    void set_waitlist_check_box_(QString waitlist);
 
     void assign_dorms_();
 
