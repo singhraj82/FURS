@@ -34,6 +34,7 @@ public slots:
     void checkin_applicant();
     void open_dorms_page();
     void open_bands_page();
+    void update_dorms_list(QModelIndex index ,int first,int last);
 
 private:
     void initialize_new_application_tab_();
@@ -52,6 +53,7 @@ private:
     void set_payment_type_radio_(QString payment_type);
 
     void assign_dorms_();
+    void assign_bands_();
 
 private:
     Ui::FURS_main_window *ui;

@@ -37,7 +37,7 @@ const QString c_singer("Singer");
 const QString c_drummer("Drummer");
 const QString c_guitarist("Guitarist");
 const QString c_bassist("Bassist");
-const QString c_keyboardist("Keyboardist");
+const QString c_keyboardist("Instrumentalist");
 const QString c_instrumentalist("Instrumentalist");
 
 const QString c_june("Week 2-3 June");
