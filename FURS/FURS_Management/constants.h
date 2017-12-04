@@ -21,6 +21,12 @@ const std::string c_table_field_app_status("app_status");
 const std::string c_table_field_payment_status("payment_status");
 const std::string c_table_field_camp("camp");
 const std::string c_table_field_pmt_type("payment_type");
+const std::string c_table_field_check_in_status("checkin_status");
+const std::string c_table_field_equipments("equipments");
+const std::string c_table_field_clothes("clothes");
+const std::string c_table_field_forms("forms");
+const std::string c_table_field_waitlist("waitlist");
+const std::string c_table_field_speciality_rank("speciality_rank");
 
 const QString c_not_selected("Not selected");
 const QString c_accepted("Accepted");
@@ -33,8 +39,8 @@ const QString c_singer("Singer");
 const QString c_drummer("Drummer");
 const QString c_guitarist("Guitarist");
 const QString c_bassist("Bassist");
-const QString c_keyboardist("Keyboardist");
-const QString c_instrumentalist("Instrumentalist");
+const QString c_keyboardist("Instrumentalist");
+const QString c_instrumentalist("Keyboardist");
 
 const QString c_june("Week 2-3 June");
 const QString c_july("Week 2-3 July");

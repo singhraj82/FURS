@@ -177,36 +177,73 @@ void Generate_letter::incomplete_information_letter_(Letter_information letter_i
 
 void Generate_letter::failed_competiton_letter_(Letter_information letter_information)
 {
-    QString html =
-        "<div align=right>"
-            + letter_information.receiver_first_name + " " + letter_information.receiver_last_name + "<br>"
-            + letter_information.receiver_address_street + "<br>"
-            + letter_information.receiver_address_city + "<br>"
-            + letter_information.receiver_address_zip_code + "<br>"
-            + letter_information.receiver_address_state + "<br>"
-            + letter_information.date +
-        "</div>"
-        "<div align=left>"
-           + letter_information.sender + "<br>"
-           + letter_information.address_street + "<br>"
-           + letter_information.address_city + "<br>"
-           + letter_information.address_zipcode + "<br>"
-           + letter_information.address_state + "<br>"
-        "</div>"
-        "<div align=left>"
-           + "Dear " + letter_information.receiver_last_name + ","
-        "</div>"
-        "<h1 align=center>" + letter_information.document_title + "</h1>"
-        "<p align=justify>"
-           "We at Futre Rock Stars are sad to inform you that based on the review of your application you have not been selected for the role of " + letter_information.role +
-           " at the upcoming camp in the week of " + letter_information.camp + ". There was a stiff competition for this position in this camp and you narrowly missed by a small"
-            "margin. So we would encourage you to practice a little more, improve your skills and apply for the upcoming camps. We will refund your fee. "
-            "We would be glad to hear from you soon."
-        "</p>"
-        "<div align=right>"
-        "Sincerly<br>"
-        + letter_information.clerk_name +
-        "</div>";
+    QString html;
+    if (letter_information.wait_list == "yes")
+    {
+        html =
+            "<div align=right>"
+                + letter_information.receiver_first_name + " " + letter_information.receiver_last_name + "<br>"
+                + letter_information.receiver_address_street + "<br>"
+                + letter_information.receiver_address_city + "<br>"
+                + letter_information.receiver_address_zip_code + "<br>"
+                + letter_information.receiver_address_state + "<br>"
+                + letter_information.date +
+            "</div>"
+            "<div align=left>"
+               + letter_information.sender + "<br>"
+               + letter_information.address_street + "<br>"
+               + letter_information.address_city + "<br>"
+               + letter_information.address_zipcode + "<br>"
+               + letter_information.address_state + "<br>"
+            "</div>"
+            "<div align=left>"
+               + "Dear " + letter_information.receiver_last_name + ","
+            "</div>"
+            "<h1 align=center>" + "Waitlist" + "</h1>"
+            "<p align=justify>"
+               "We at Futre Rock Stars are glad to inform you that you have been put in to the waitlist for the role of " + letter_information.role +
+               " at the upcoming camp in the week of " + letter_information.camp + ". There was a stiff competition for this position in this camp and you narrowly missed by a small"
+                "margin. Please let us know if you would be willing to attend the camp in case there are any last minute openings . "
+                "We would be glad to hear from you soon."
+            "</p>"
+            "<div align=right>"
+            "Sincerly<br>"
+            + letter_information.clerk_name +
+            "</div>";
+    }
+    else
+    {
+        html =
+            "<div align=right>"
+                + letter_information.receiver_first_name + " " + letter_information.receiver_last_name + "<br>"
+                + letter_information.receiver_address_street + "<br>"
+                + letter_information.receiver_address_city + "<br>"
+                + letter_information.receiver_address_zip_code + "<br>"
+                + letter_information.receiver_address_state + "<br>"
+                + letter_information.date +
+            "</div>"
+            "<div align=left>"
+               + letter_information.sender + "<br>"
+               + letter_information.address_street + "<br>"
+               + letter_information.address_city + "<br>"
+               + letter_information.address_zipcode + "<br>"
+               + letter_information.address_state + "<br>"
+            "</div>"
+            "<div align=left>"
+               + "Dear " + letter_information.receiver_last_name + ","
+            "</div>"
+            "<h1 align=center>" + letter_information.document_title + "</h1>"
+            "<p align=justify>"
+               "We at Futre Rock Stars are sad to inform you that based on the review of your application you have not been selected for the role of " + letter_information.role +
+               " at the upcoming camp in the week of " + letter_information.camp + ". There was a stiff competition for this position in this camp and you narrowly missed by a small"
+                "margin. So we would encourage you to practice a little more, improve your skills and apply for the upcoming camps. We will refund your fee. "
+                "We would be glad to hear from you soon."
+            "</p>"
+            "<div align=right>"
+            "Sincerly<br>"
+            + letter_information.clerk_name +
+            "</div>";
+        }
 
         QTextDocument document;
         document.setHtml(html);

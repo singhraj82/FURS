@@ -23,6 +23,7 @@ struct Letter_information
     QString receiver_address_state;
     QString receiver_address_zip_code;
     QString payment_status;
+    QString wait_list;
 
     QString letter_path()
     {
