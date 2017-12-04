@@ -32,7 +32,7 @@ This project currently uses Manual testing
 To deploy the project run $QTDIR/bin/windeployqt.exe with path to the application executable. It will pull all the dependencies and put it with the executable.
 
 ## Milestone 2.0
-1. Implement the checki-in process for selected candidates.
+1. Implement the check-in process for selected candidates.
 2. Assignment of Dorms 
 3. Assignment of Primary bands
 4. Assignment of secondary bands
