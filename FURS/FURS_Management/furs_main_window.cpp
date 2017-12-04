@@ -110,6 +110,7 @@ void FURS_main_window::initialize_dorms_tab_()
 void FURS_main_window::initialize_bands_tab_()
 {
     connect(ui->bands_button, SIGNAL(pressed()), this, SLOT(open_bands_page()));
+    connect(ui->bands_secondary_button, SIGNAL(pressed()), this, SLOT(open_secondary_bands_page()));
 }
 
 // Actions stack window
@@ -563,14 +564,6 @@ void FURS_main_window::open_dorms_page()
     connect(ui->button_dorms_exit, SIGNAL(pressed()), this, SLOT(open_action_window()));
     ui->furs_stacked_control->setCurrentIndex(4);
 
-    //connect(ui->boys_dorm_1, SIGNAL(itemEntered(QListWidgetItem*)), this, SLOT(update_dorms_list(QListWidgetItem*)));
-    //connect(ui->boys_dorm_1->model(), SIGNAL(rowsAboutToBeInserted(QModelIndex,int,int)), this, SLOT(update_dorms_list(QModelIndex,int,int)));
-
-
-    //Set dorms widget drag-drop enabled
-    ui->table_dorms->setAcceptDrops(true);
-    ui->table_dorms->setDragEnabled(true);
-
     //Assign the dorms
     assign_dorms_();
 }
@@ -668,7 +661,6 @@ void FURS_main_window::assign_dorms_()
     }*/
 
     ui->table_dorms->clear();
-    ui->table_dorms->setSortingEnabled(true);
 
     QStringList labels;
     labels << tr("DORM_ID") << tr("LAST_NAME") << tr("AGE") << tr("APPLICATION_ID");
@@ -686,40 +678,6 @@ void FURS_main_window::assign_dorms_()
     {
         ui->table_dorms->setRowCount(results.size() * 2);
 
-        /*std::multimap<int, std::vector<std::string>> girls_data;
-        for (auto res : results)
-        {
-            girls_data.insert(std::make_pair<int, std::vector<std::string>>(std::stoi(res[4]), {res[0], res[1], res[2],res[3]}));
-        }
-
-        auto size = girls_data.size();
-        for (auto i = 0; i < size; i+=6)
-        {
-            for (size_t i = 0; i < results.size(); ++i)
-            {
-                auto values = results[i];
-                table_widget_filter->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
-                table_widget_filter->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
-            }
-
-            girls_dorm_1->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
-            girls_dorm_1->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
-
-           ui->girls_dorm_1->addItem(QString(girls_data.begin()->second[1].c_str()) + "_" + QString(girls_data.begin()->second[0].c_str()));
-           girls_data.erase(girls_data.begin());
-
-           ui->girls_dorm_1->addItem(QString(girls_data.rbegin()->second[1].c_str()) + "_" + QString(girls_data.begin()->second[0].c_str()));
-           girls_data.erase(--girls_data.end());
-        }
-
-
-        for (size_t i = 0; i < results.size(); ++i)
-        {
-            auto values = results[i];
-            table_widget_filter->setItem(i, 0, new QTableWidgetItem(QString(values[0].c_str())));
-            table_widget_filter->setItem(i, 1, new QTableWidgetItem(QString(values[1].c_str())));
-        }*/
-
         std::vector<std::pair<int, std::vector<std::string>>> girls_data;
         for (auto res : results)
         {
@@ -727,7 +685,6 @@ void FURS_main_window::assign_dorms_()
         }
 
         std::sort(girls_data.begin(), girls_data.end());
-
 
         do
         {
@@ -802,24 +759,44 @@ void FURS_main_window::assign_dorms_()
     {
         qDebug() << "Failed to fetch data";
     }
+
+    ui->table_dorms->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
 void FURS_main_window::open_bands_page()
 {
     ui->furs_stacked_control->setCurrentIndex(5);
     connect(ui->button_bands_exit, SIGNAL(pressed()), this, SLOT(open_action_window()));
-    ui->table_bands->setSortingEnabled(true);
+    connect(ui->button_bands_reset, SIGNAL(pressed()), this, SLOT(reset_bands()));
 
     // Asign the bands
     assign_bands_();
 }
 
+void FURS_main_window::open_secondary_bands_page()
+{
+    ui->furs_stacked_control->setCurrentIndex(6);
+    connect(ui->button_secondary_bands_exit, SIGNAL(pressed()), this, SLOT(open_action_window()));
+    connect(ui->button_secondary_bands_reset, SIGNAL(pressed()), this, SLOT(reset_secondary_bands()));
+
+    // Asign the bands
+    assign_same_gender_bands_();
+}
+
 void FURS_main_window::assign_bands_()
 {
+    ui->table_bands->clear();
+    ui->table_bands->setRowCount(0);
+    QStringList labels;
+    labels << tr("BAND") << tr("SPECIALITY") << tr("RANK") << tr("LAST_NAME") << tr("FIRST_NAME") << tr("GENDER") << tr("APPLICATION_ID");
+    ui->table_bands->setHorizontalHeaderLabels(labels);
+
+    ui->table_bands->setRowCount(48);
+
     std::vector<std::map<int, std::vector<std::string>>> vec_boys;
     std::vector<std::map<int, std::vector<std::string>>> vec_girls;
 
-    // Get all the information for girls
+    // Get all the information for girls-----------------------------------------------------------------------------------------------------------------------------------------------
     // singer
     std::vector<std::vector<std::string>> results_girls;
     std::string sql_query_girls("select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Singer' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc");
@@ -915,7 +892,7 @@ void FURS_main_window::assign_bands_()
         vec_girls.push_back(local_map);
     }
 
-    //------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // Get all the information for boys
     // singer
     success = false;
@@ -1013,13 +990,7 @@ void FURS_main_window::assign_bands_()
         vec_boys.push_back(local_map);
     }
 
-    // Set the rows for the tables
-    QStringList labels;
-    labels << tr("BAND") << tr("SPECIALITY") << tr("RANK") << tr("LAST_NAME") << tr("FIRST_NAME") << tr("GENDER") << tr("APPLICATION_ID");
-    ui->table_bands->setHorizontalHeaderLabels(labels);
-
-    ui->table_bands->setRowCount(48);
-
+    // Set the rows for the tables -------------------------------------------------------------------------------------------------------------------------------------------
     int i = 0;
     // 114432
     {
@@ -1668,18 +1639,902 @@ void FURS_main_window::assign_bands_()
         ui->table_bands->setItem(i, 6, new QTableWidgetItem(QString(band_8[4].c_str())));
         ++i;
     }
+
+    ui->table_bands->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
-void FURS_main_window::update_dorms_list(QModelIndex index ,int first,int last)
+void FURS_main_window::assign_same_gender_bands_()
 {
-    //auto val = index.model()->data(index).toString();
-   //item->text().toStdString();
-   //std::string sql_query("select gender from applications where last_name = '" + item->text().toStdString() + "'");
-   std::string sql_query("select gender from applications where last_name = 'test'");
-   std::vector<std::vector<std::string>> results;
-   auto success = m_db_management->result_from_query(sql_query, results);
+    ui->table_secondary_bands->clear();
+    ui->table_secondary_bands->setRowCount(0);
+    QStringList labels;
+    labels << tr("BAND") << tr("SPECIALITY") << tr("RANK") << tr("LAST_NAME") << tr("FIRST_NAME") << tr("GENDER") << tr("APPLICATION_ID");
+    ui->table_secondary_bands->setHorizontalHeaderLabels(labels);
 
-   if (success)
-   {
-   }
+    ui->table_secondary_bands->setRowCount(48);
+
+    std::vector<std::map<int, std::vector<std::string>>> vec_boys;
+    std::vector<std::map<int, std::vector<std::string>>> vec_girls;
+
+    // Get all the information for girls-----------------------------------------------------------------------------------------------------------------------------------------------
+    // singer
+    std::vector<std::vector<std::string>> results_girls;
+    std::string sql_query_girls("select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Singer' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc");
+    auto success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    // Guitarist
+    success = false;
+    results_girls.clear();
+    sql_query_girls = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Guitarist' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    // Bassist
+    success = false;
+    results_girls.clear();
+    sql_query_girls = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Bassist' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    // Drummer
+    success = false;
+    results_girls.clear();
+    sql_query_girls = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Drummer' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    // Keyboardist
+    success = false;
+    results_girls.clear();
+    sql_query_girls = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Keyboardist' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    // Instrumentalist
+    success = false;
+    results_girls.clear();
+    sql_query_girls = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Instrumentalist' and gender = 'Female' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_girls, results_girls);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_girls)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_girls.push_back(local_map);
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Get all the information for boys
+    // singer
+    success = false;
+    std::vector<std::vector<std::string>> results_boys;
+    std::string sql_query_boys("select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Singer' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc");
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Guitarist
+    success = false;
+    results_boys.clear();
+    sql_query_boys = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Guitarist' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Bassist
+    success = false;
+    results_boys.clear();
+    sql_query_boys = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Bassist' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Drummer
+    success = false;
+    results_boys.clear();
+    sql_query_boys = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Drummer' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Keyboardist
+    success = false;
+    results_boys.clear();
+    sql_query_boys = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Keyboardist' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Instrumentalist
+    success = false;
+    results_boys.clear();
+    sql_query_boys = "select speciality, speciality_rank, last_name, first_name, gender, id from applications where speciality = 'Instrumentalist' and gender = 'Male' and app_status = 'Accepted' order by speciality, speciality_rank asc";
+    success = m_db_management->result_from_query(sql_query_boys, results_boys);
+    if (success)
+    {
+        std::map<int, std::vector<std::string>> local_map;
+        for (auto res: results_boys)
+        {
+            auto key = res.at(1);
+            local_map.emplace(std::make_pair<int, std::vector<std::string>>(std::stoi(key), { res.at(0), res.at(2), res.at(3), res.at(4), res.at(5) }));
+        }
+        vec_boys.push_back(local_map);
+    }
+
+    // Set the rows for the tables -------------------------------------------------------------------------------------------------------------------------------------------
+    int i = 0;
+    // 114432
+    {
+        auto vec_boy  = vec_boys;
+        auto vec_girl = vec_girls;
+
+        //1
+        auto pos = rand() % vec_boy.size();
+        auto val = vec_boy[pos];
+        auto band_1 = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        //1
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band_1 = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        //4
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band_1 = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+
+        //4
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band_1 = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+
+        //3
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band_1 = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        //2
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band_1 = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band_1 = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("5")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band_1[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band_1[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band_1[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band_1[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band_1[4].c_str())));
+        ++i;
+    }
+
+    // 223314
+    {
+        auto vec_boy = vec_boys;
+        auto vec_girl = vec_girls;
+
+        //2
+        auto pos = rand() % vec_boy.size();
+        auto val = vec_boy[pos];
+        auto band = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //2
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //3
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //3
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //1
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //4
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("6")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+    }
+
+    // 332241
+    {
+        auto vec_boy = vec_boys;
+        auto vec_girl = vec_girls;
+
+        //3
+        auto pos = rand() % vec_boy.size();
+        auto val = vec_boy[pos];
+        auto band = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //3
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //2
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //2
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //4
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //1
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("7")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+    }
+
+    // 441123
+    {
+        auto vec_boy = vec_boys;
+        auto vec_girl = vec_girls;
+
+        //4
+        auto pos = rand() % vec_boy.size();
+        auto val = vec_boy[pos];
+        auto band = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //4
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[4];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[4];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //1
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //1
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[1];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[1];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("1")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //2
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[2];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[2];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("2")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        //3
+        pos = rand() % vec_boy.size();
+        val = vec_boy[pos];
+        band = val[3];
+        vec_boy.erase(vec_boy.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("4")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+
+        pos = rand() % vec_girl.size();
+        val = vec_girl[pos];
+        band = val[3];
+        vec_girl.erase(vec_girl.begin() + pos);
+        ui->table_secondary_bands->setItem(i, 0, new QTableWidgetItem(QString("8")));
+        ui->table_secondary_bands->setItem(i, 1, new QTableWidgetItem(QString(band[0].c_str())));
+        ui->table_secondary_bands->setItem(i, 2, new QTableWidgetItem(QString("3")));
+        ui->table_secondary_bands->setItem(i, 3, new QTableWidgetItem(QString(band[1].c_str())));
+        ui->table_secondary_bands->setItem(i, 4, new QTableWidgetItem(QString(band[2].c_str())));
+        ui->table_secondary_bands->setItem(i, 5, new QTableWidgetItem(QString(band[3].c_str())));
+        ui->table_secondary_bands->setItem(i, 6, new QTableWidgetItem(QString(band[4].c_str())));
+        ++i;
+    }
+
+    ui->table_secondary_bands->sortByColumn(0, Qt::SortOrder::AscendingOrder);
+}
+
+void FURS_main_window::reset_bands()
+{
+    assign_bands_();
+}
+
+void FURS_main_window::reset_secondary_bands()
+{
+    assign_same_gender_bands_();
 }
