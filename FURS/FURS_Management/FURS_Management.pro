@@ -23,10 +23,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG(debug, debug|release) {
-    #This is a release build
+    #This is a debug build
     DEFINES += QT_TESTS
 } else {
-    #This is a debug build
+    #This is a release build
 }
 
 SOURCES += main.cpp\
