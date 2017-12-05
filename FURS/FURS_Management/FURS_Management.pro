@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql printsupport
+QT       += core gui sql printsupport testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,6 +22,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG(debug, debug|release) {
+    #This is a release build
+    DEFINES += QT_TESTS
+} else {
+    #This is a debug build
+}
 
 SOURCES += main.cpp\
         furs_main_window.cpp \
@@ -33,6 +39,7 @@ HEADERS  += furs_main_window.h \
     constants.h \
     application.h \
     database_management.h \
-    generate_letter.h
+    generate_letter.h \
+    furs_test.h
 
 FORMS    += furs_main_window.ui
