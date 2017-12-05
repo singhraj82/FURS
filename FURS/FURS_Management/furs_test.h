@@ -7,6 +7,8 @@
 #include "application.h"
 #include "database_management.h"
 #include "generate_letter.h"
+#include "furs_main_window.h"
+#include "ui_furs_main_window.h"
 
 class Furs_test : public QObject
 {
@@ -162,6 +164,192 @@ private slots:
 
         QCOMPARE(letter_path, li.letter_path());
     }
+
+    void test_application_launch_page()
+    {
+        // On creation of app launch page should be opened
+        FURS_main_window mw;
+        QCOMPARE(0, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_welcome_page_start_button()
+    {
+        // On clicking start button actions page should open.
+        FURS_main_window mw;
+        mw.ui->start_button->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_action_page_registration_button()
+    {
+        // On clicking registration button registration page should open.
+        FURS_main_window mw;
+        mw.ui->registration_button->pressed();
+        QCOMPARE(2, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_action_page_checkin_button()
+    {
+        // On clicking checkin button checkin page should open.
+        FURS_main_window mw;
+        mw.ui->checkin_button->pressed();
+        QCOMPARE(3, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_action_page_dorms_button()
+    {
+        // On clicking dorms button dorms page should open.
+        FURS_main_window mw;
+        mw.ui->dorms_button->pressed();
+        QCOMPARE(4, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_action_page_bands_button()
+    {
+        // On clicking bands button bands page should open.
+        FURS_main_window mw;
+        mw.ui->bands_button->pressed();
+        QCOMPARE(5, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_action_page_secondary_bands_button()
+    {
+        // On clicking secondary bands button secondary bands page should open.
+        FURS_main_window mw;
+        mw.ui->bands_secondary_button->pressed();
+        QCOMPARE(6, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_registration_page_last_name_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_last_name->setText("last_name");
+        QCOMPARE(QString("last_name"), mw.ui->line_edit_last_name->text());
+    }
+
+    void test_existing_page_last_name_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_last_name_exist->setText("last_name");
+        QCOMPARE(QString("last_name"), mw.ui->line_edit_last_name_exist->text());
+    }
+
+    void test_registration_page_first_name_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_first_name->setText("first_name");
+        QCOMPARE(QString("first_name"), mw.ui->line_edit_first_name->text());
+    }
+
+    void test_existing_page_first_name_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_first_name_exist->setText("first_name");
+        QCOMPARE(QString("first_name"), mw.ui->line_edit_first_name_exist->text());
+    }
+
+    void test_registration_page_street_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_street->setText("test_street");
+        QCOMPARE(QString("test_street"), mw.ui->line_edit_street->text());
+    }
+
+    void test_exist_page_street_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_street_exist->setText("test_street");
+        QCOMPARE(QString("test_street"), mw.ui->line_edit_street_exist->text());
+    }
+
+    void test_registration_page_city_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_city->setText("test");
+        QCOMPARE(QString("test"), mw.ui->line_edit_city->text());
+    }
+
+    void test_registration_page_phone_line_edit()
+    {
+        FURS_main_window mw;
+        mw.ui->line_edit_phone->setText("123456780");
+        QCOMPARE(QString("123456780"), mw.ui->line_edit_phone->text());
+    }
+
+    void test_registration_page_camp_combo()
+    {
+        FURS_main_window mw;
+        mw.ui->combo_box_camp->setCurrentText(QString("Not selected"));
+        QCOMPARE(QString("Not selected"), mw.ui->combo_box_camp->currentText());
+    }
+
+    void test_existing_page_camp_combo()
+    {
+        FURS_main_window mw;
+        mw.ui->combo_box_camp_exist->setCurrentText(QString("Not selected"));
+        QCOMPARE(QString("Not selected"), mw.ui->combo_box_camp_exist->currentText());
+    }
+
+    void test_registration_page_app_status_combo()
+    {
+        FURS_main_window mw;
+        mw.ui->combo_box_app_status->setCurrentText(QString("Accepted"));
+        QCOMPARE(QString("Accepted"), mw.ui->combo_box_app_status->currentText());
+    }
+
+    void test_existing_page_app_status_combo()
+    {
+        FURS_main_window mw;
+        mw.ui->combo_box_app_status_exist->setCurrentText(QString("Accepted"));
+        QCOMPARE(QString("Accepted"), mw.ui->combo_box_app_status_exist->currentText());
+    }
+
+    void test_registration_page_cancel_button()
+    {
+        FURS_main_window mw;
+        mw.ui->button_cancel->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_existing_page_cancel_button()
+    {
+        FURS_main_window mw;
+        mw.ui->button_cancel_existing->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_checkin_page_cancel_button()
+    {
+        FURS_main_window mw;
+        mw.ui->checkin_button->pressed();
+        mw.ui->button_cancel_check_in_applicant->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_dorms_page_exit_button()
+    {
+        FURS_main_window mw;
+        mw.ui->dorms_button->pressed();
+        mw.ui->button_dorms_exit->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_bands_page_exit_button()
+    {
+        FURS_main_window mw;
+        mw.ui->bands_button->pressed();
+        mw.ui->button_bands_exit->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
+    void test_secondary_bands_page_exit_button()
+    {
+        FURS_main_window mw;
+        mw.ui->bands_secondary_button->pressed();
+        mw.ui->button_secondary_bands_exit->pressed();
+        QCOMPARE(1, mw.ui->furs_stacked_control->currentIndex());
+    }
+
 };
 
 #endif

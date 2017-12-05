@@ -101,7 +101,6 @@ void Database_management::close_database()
 void Database_management::setup_database_()
 {
     QString data_path = QCoreApplication::applicationDirPath() + "/../../FURS_Management/furs_data";
-    qDebug() << data_path;
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName(data_path);
 

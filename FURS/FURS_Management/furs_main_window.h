@@ -63,6 +63,7 @@ private:
     void assign_same_gender_bands_();
 
 private:
+    friend class Furs_test;
     Ui::FURS_main_window *ui;
     std::shared_ptr<Database_management> m_db_management;
 };
