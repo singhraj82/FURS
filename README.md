@@ -33,10 +33,13 @@ To deploy the project run $QTDIR/bin/windeployqt.exe with path to the applicatio
 
 ## Milestone 2.0
 1. Implement the check-in process for selected candidates.
-2. Assignment of Dorms .
+2. Assignment of Dorms.
 3. Assignment of Primary bands.
 4. Assignment of secondary bands.
 5. Provision to manage and maintain Waitlist.
+6. Automated build.
+7. Unit tests.
+8. Automated process to create deployable product.
 
 ## Build and Deploy Automatically
 1. Make sure that you have Qt SDK and Qt Creator installed.
