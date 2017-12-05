@@ -14,3 +14,4 @@ mkdir Deploy_FuRS\FURS\FURS_Management
 mkdir Deploy_FuRS\FURS\FURS_Management\release
 xcopy /s release\* Deploy_FuRS\FURS\FURS_Management\release
 xcopy furs_data Deploy_FuRS\FURS\FURS_Management
+xcopy furs.bat Deploy_FuRS\FURS
