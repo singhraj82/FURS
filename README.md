@@ -44,6 +44,7 @@ To deploy the project run $QTDIR/bin/windeployqt.exe with path to the applicatio
 ## Build and Deploy Automatically
 1. Make sure that you have Qt SDK and Qt Creator installed.
 2. Set your installed Qt path(folder that contains bin) to QTDIR. e.g QTDIR=C:\Qt\5.8\mingw53_32
+3. Also add location of \Tools\mingw530_32\bin to the PATH. e.g. C:\Qt\Tools\mingw530_32\bin
 3. Get the source code from repository.
 4. Goto the source code folder and run FuRS_Management_Script.bat. This will create required project files, necessary folders and build the code in release mode, generate executable and also pull in all the required dependencies in to the release folder.
 5. This will create a Deploy_FuRS folder with all necessary files. release folder contains the executable to be run.
