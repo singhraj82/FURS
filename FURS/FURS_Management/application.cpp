@@ -124,3 +124,13 @@ std::string Application::camp() const
 {
     return m_camp;
 }
+
+void Application::set_age(int age)
+{
+    m_age = age;
+}
+
+int Application::age()
+{
+    return m_age;
+}

@@ -22,7 +22,7 @@ bool Database_management::update_query(std::string query_string)
         qDebug() << "Failed to execute query: " << query_string.c_str();
     }
 
-    qDebug() << "Failed to execute query: " << query_string.c_str();
+    qDebug() << "Successfully executed query: " << query_string.c_str();
     return query_result;
 }
 
@@ -91,6 +91,11 @@ bool Database_management::select_result_from_query(std::vector<std::string> sele
     }
 
     return query_result;
+}
+
+void Database_management::close_database()
+{
+    close_database_();
 }
 
 void Database_management::setup_database_()
