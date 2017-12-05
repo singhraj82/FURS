@@ -147,6 +147,21 @@ private slots:
         QCOMPARE(QString("test_sender"), li.sender);
         QCOMPARE(QString("test_address_street"), li.address_street);
     }
+
+    void test_letter_path()
+    {
+        Letter_information li;
+        li.receiver_last_name   = "test_last_name";
+        li.receiver_first_name  = "test_first_name";
+        li.document_title       = "test_letter";
+
+        QString letter_path = QCoreApplication::applicationDirPath() + "/../../letters/" +
+                "test_last_name" + "_" +
+                "test_first_name" + "_" +
+                "test_letter" + ".pdf";
+
+        QCOMPARE(letter_path, li.letter_path());
+    }
 };
 
 #endif
