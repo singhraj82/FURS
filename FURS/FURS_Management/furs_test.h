@@ -1,6 +1,7 @@
 #ifndef FURS_TEST_H
 #define FURS_TEST_H
 
+#ifdef QT_TESTS
 #include <QtWidgets>
 #include <QtTest/QtTest>
 #include "application.h"
@@ -148,4 +149,5 @@ private slots:
     }
 };
 
+#endif
 #endif // FURS_TEST_H
