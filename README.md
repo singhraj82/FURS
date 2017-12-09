@@ -2,7 +2,7 @@
 
 This is the project for CGU MSIST Course IST303 Software Development.
 The project is to create software to support the activities of the registration clerk at “Future Rock Stars” (FuRS), a small, new, rock and roll training summer camp.
-or now the purpose is to handle the responsibilities of clerk to receive and handle applications, mailing notices, checkin, assign bands and dormitories.
+For now the purpose is to handle the responsibilities of clerk to receive and handle applications, mailing notices, checkin, assign bands and dormitories.
 
 ## Milestone 1.0
 For the current milstone this project handles the process to receive applicatons,  process, and notify selected candidates.
