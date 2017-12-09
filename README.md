@@ -26,7 +26,7 @@ To build the project install the latest version of Open Source Qt from https://w
 
 ## Tests
 
-This project currently uses Manual testing
+This project currently uses both Manual and automated testing
 
 ## Deploy Manually
 To deploy the project run $QTDIR/bin/windeployqt.exe with path to the application executable. It will pull all the dependencies and put it with the executable.
