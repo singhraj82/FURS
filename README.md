@@ -46,7 +46,7 @@ To deploy the project run $QTDIR/bin/windeployqt.exe with path to the applicatio
 2. Set your installed Qt path(folder that contains bin) to QTDIR. e.g QTDIR=C:\Qt\5.8\mingw53_32
 3. Also add location of \Tools\mingw530_32\bin to the PATH. e.g. C:\Qt\Tools\mingw530_32\bin
 3. Get the source code from repository.
-4. Goto the source code folder and run FuRS_Management_Script.bat. This will create required project files, necessary folders and build the code in release mode, generate executable and also pull in all the required dependencies in to the release folder.
+4. Open command prompt and goto the source code folder and run FuRS_Management_Script.bat. This will create required project files, necessary folders and build the code in release mode, generate executable and also pull in all the required dependencies in to the release folder.
 5. This will create a Deploy_FuRS folder with all necessary files. release folder contains the executable to be run.
 6. This deploy folder can be used as a deliverable to run the project. There is a fors.bat file inside FURS folder. On clicking it launches the application. 
 
